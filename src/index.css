@@ -2,3 +2,38 @@
 .date-input {
     @apply grid grid-cols-2 gap-x-6 items-end;
 }
+.cv-constraints-web {
+    width: 168mm;
+    height: 267.6mm;
+}
+.cv-constraints {
+    width: 794px;
+    height: 1123px;
+}
+
+/* Ensure markdown lists render with bullets across Tailwind preflight resets */
+.markdown-content ul {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.markdown-content ol {
+    list-style-type: decimal;
+    padding-left: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.markdown-content li {
+    margin: 0.1rem 0;
+}
+
+/* Force bullets in the editor preview as well */
+.wmde-markdown ul {
+    list-style-type: disc !important;
+    padding-left: 1.25rem !important;
+}
+.wmde-markdown ol {
+    list-style-type: decimal !important;
+    padding-left: 1.25rem !important;
+}

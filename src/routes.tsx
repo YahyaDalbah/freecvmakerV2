@@ -1,7 +1,8 @@
-import type { RouteObject } from "react-router-dom";
+import { Navigate, type RouteObject } from "react-router-dom";
 import CvPage from "./pages/cv/CvPage";
-import AuthPage from "./pages/AuthPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import PrintCvPage from "./pages/cv/PrintCvPage";
+// import AuthPage from "./pages/AuthPage";
+// import NotFoundPage from "./pages/NotFoundPage";
 
 export const routes: RouteObject[] = [
   {
@@ -11,15 +12,27 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: "/auth",
+    path: "/print",
     element: (
-      <AuthPage />
+      <PrintCvPage />
     ),
   },
   {
     path: "*",
     element: (
-      <NotFoundPage />
+      <Navigate to="/" />
     ),
-  },
+  }
+  // {
+  //   path: "/auth",
+  //   element: (
+  //     <AuthPage />
+  //   ),
+  // },
+  // {
+  //   path: "*",
+  //   element: (
+  //     <NotFoundPage />
+  //   ),
+  // },
 ]; 
