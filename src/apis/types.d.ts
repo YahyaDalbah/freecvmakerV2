@@ -23,9 +23,8 @@ export type Project = {
     description?: string;
     technologies?: string[];
 }
-export type Technology = {
-    id: string;
-    technology?: string;
+export type Skills = {
+    description?: string;
 }
 export type PersonalInfo = {
     name?: string;

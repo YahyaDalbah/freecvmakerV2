@@ -3,11 +3,11 @@ import GridInputsContainer from "../../ui/GridInputsContainer";
 import SectionTitle from "../../ui/SectionTitle";
 import TextAreaInput from "../../ui/inputs/TextAreaInput";
 import TextInput from "../../ui/inputs/TextInput";
-import type { Education, Experience, Project, Technology } from "../../apis/types";
+import type { Education, Experience, Project, Skills } from "../../apis/types";
 import { useState } from "react";
 import Button from "../../ui/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-icons";
 import Cv1 from "./cvs/Cv1";
 import { saveAs } from "file-saver";
 
@@ -16,6 +16,7 @@ const generateId = (): string => {
 };
 
 export default function CvPage() {
+    const [showCvOnSmall, setShowCvOnSmall] = useState(true);
     const [personalInfo, setPersonalInfo] = useState({
         name: 'John Doe',
         email: 'johndoe@example.com',
@@ -77,7 +78,7 @@ export default function CvPage() {
             github: 'https://github.com/johndoe/frontend-projects'
         },
         {
-            id: '4',
+            id: '10',
             jobTitle: 'Frontend Developer',
             company: 'Tech Solutions Inc.',
             startDate: 'Jan 2021',
@@ -120,12 +121,9 @@ export default function CvPage() {
         }
     ]);
     
-    const [technologies, setTechnologies] = useState<Technology[]>([
-        { id: '1', technology: 'React' },
-        { id: '2', technology: 'TypeScript' },
-        { id: '3', technology: 'Node.js' },
-        { id: '4', technology: 'GraphQL' }
-    ]);
+    const [skills, setSkills] = useState<Skills>({
+        description: '- React, TypeScript, Node.js, GraphQL\n- Strong in problem solving and clean code.'
+    });
     
     const [projects, setProjects] = useState<Project[]>([
         {
@@ -142,12 +140,7 @@ export default function CvPage() {
         }
     ]);
     
-    const [programmingLanguages, setProgrammingLanguages] = useState<Technology[]>([
-        { id: '1', technology: 'JavaScript' },
-        { id: '2', technology: 'TypeScript' },
-        { id: '3', technology: 'Python' },
-        { id: '4', technology: 'C++' }
-    ]);
+    
 
     const updatePersonalInfo = (field: keyof typeof personalInfo, value: string) => {
         setPersonalInfo(prev => ({ ...prev, [field]: value }));
@@ -165,16 +158,8 @@ export default function CvPage() {
         ));
     };
 
-    const updateTechnology = (id: string, value: string) => {
-        setTechnologies(prev => prev.map(item =>
-            item.id === id ? { ...item, technology: value } : item
-        ));
-    };
-
-    const updateProgrammingLanguage = (id: string, value: string) => {
-        setProgrammingLanguages(prev => prev.map(item =>
-            item.id === id ? { ...item, technology: value } : item
-        ));
+    const updateSkills = (value: string) => {
+        setSkills(prev => ({ ...prev, description: value }));
     };
 
     const updateProject = (id: string, field: keyof Project, value: string | string[]) => {
@@ -195,24 +180,14 @@ export default function CvPage() {
     function deleteEducation(id: string) {
         setEducation(education.filter(item => item.id !== id));
     }
-    function addTechnology() {
-        setTechnologies([...technologies, { id: generateId(), technology: '' }]);
-    }
-    function deleteTechnology(id: string) {
-        setTechnologies(technologies.filter(item => item.id !== id));
-    }
+    
     function addProject() {
         setProjects([...projects, { id: generateId(), name: '', description: '', technologies: [] }]);
     }
     function deleteProject(id: string) {
         setProjects(projects.filter(item => item.id !== id));
     }
-    function addProgrammingLanguage() {
-        setProgrammingLanguages([...programmingLanguages, { id: generateId(), technology: '' }]);
-    }
-    function deleteProgrammingLanguage(id: string) {
-        setProgrammingLanguages(programmingLanguages.filter(item => item.id !== id));
-    }
+    
 
     async function handleGeneratePdf() {
         const payload = {
@@ -220,8 +195,7 @@ export default function CvPage() {
             experience,
             education,
             projects,
-            technologies,
-            programmingLanguages,
+            skills,
         };
         const res = await fetch("http://localhost:3001/api/generate-cv", {
             method: "POST",
@@ -237,8 +211,8 @@ export default function CvPage() {
         saveAs(blob, "cv.pdf");
     }
     return (
-        <div className="grid grid-cols-2">
-            <div className="flex flex-col gap-12 p-12">
+        <div className="relative grid grid-cols-1 2xl:grid-cols-2">
+            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} 2xl:flex flex-col gap-12 p-12`}>
                 {/* Personal Info */}
                 <div>
                     <SectionTitle title="Personal Info" />
@@ -309,35 +283,21 @@ export default function CvPage() {
                         <Button variant="link" onClick={addProject}><FontAwesomeIcon icon={faPlus} /> Add Project</Button>
                     </div>
                 </div>
-                {/* Technologies */}
+                {/* Skills */}
                 <div>
-                    <SectionTitle title="Technologies" />
-                    <div className="flex flex-col gap-4">
-                        {technologies.map((technology) => (
-                            <DropdownMenu title={technology.technology} onDelete={() => deleteTechnology(technology.id)} key={technology.id}>
-                                <TextInput label="Technology" name="technology" type="text" placeholder="Enter technology" value={technology.technology} onChange={(e) => updateTechnology(technology.id, e.target.value)} />
-                            </DropdownMenu>
-                        ))}
-                        <Button variant="link" onClick={addTechnology}><FontAwesomeIcon icon={faPlus} /> Add Technology</Button>
-                    </div>
-                </div>
-                {/* Programming Languages */}
-                <div>
-                    <SectionTitle title="Programming Languages" />
-                    <div className="flex flex-col gap-4">
-                        {programmingLanguages.map((programmingLanguage) => (
-                            <DropdownMenu title={programmingLanguage.technology} onDelete={() => deleteProgrammingLanguage(programmingLanguage.id)} key={programmingLanguage.id}>
-                                <TextInput label="Programming Language" name="programmingLanguage" type="text" placeholder="Enter programming language" value={programmingLanguage.technology} onChange={(e) => updateProgrammingLanguage(programmingLanguage.id, e.target.value)} />
-                            </DropdownMenu>
-                        ))}
-                        <Button variant="link" onClick={addProgrammingLanguage}><FontAwesomeIcon icon={faPlus} /> Add Programming Language</Button>
-                    </div>
+                    <SectionTitle title="Skills" />
+                    <GridInputsContainer>
+                        <TextAreaInput span={true} name="skillsDescription" value={skills.description ?? ''} onChange={(value) => updateSkills(value)} />
+                    </GridInputsContainer>
                 </div>
             </div>
-            <div className="bg-gray-700 flex flex-col items-center gap-8 pt-6">
+            <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} 2xl:flex flex-col items-center gap-8 pt-6`}>
                 <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-12 cursor-pointer">Generate PDF</button>
-                <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} technologies={technologies} programmingLanguages={programmingLanguages} />
+                <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} skills={skills} />
             </div>
+            <button onClick={() => setShowCvOnSmall(prev => !prev)} className="2xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
+                <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />
+            </button>
         </div>
     )
 }

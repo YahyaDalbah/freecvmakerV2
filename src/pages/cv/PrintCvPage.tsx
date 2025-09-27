@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Cv1 from "./cvs/Cv1";
-import type { Education, Experience, PersonalInfo, Project, Technology } from "../../apis/types";
+import type { Education, Experience, PersonalInfo, Project, Skills } from "../../apis/types";
 
 export default function PrintCvPage() {
   const [params] = useSearchParams();
@@ -29,8 +29,7 @@ export default function PrintCvPage() {
         experience: Experience[];
         education: Education[];
         projects: Project[];
-        technologies: Technology[];
-        programmingLanguages: Technology[];
+        skills?: Skills;
       };
     } catch {
       return {
@@ -38,8 +37,7 @@ export default function PrintCvPage() {
         experience: [],
         education: [],
         projects: [],
-        technologies: [],
-        programmingLanguages: [],
+        skills: { description: "" },
       } as any;
     }
   }, [params]);
@@ -51,8 +49,7 @@ export default function PrintCvPage() {
       experience={data.experience}
       education={data.education}
       projects={data.projects}
-      technologies={data.technologies}
-      programmingLanguages={data.programmingLanguages}
+      skills={data.skills}
     />
   );
 }

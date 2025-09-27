@@ -1,17 +1,17 @@
-import type { Education, Experience, PersonalInfo, Project, Technology } from "../../../apis/types";
+import type { Education, Experience, PersonalInfo, Project, Skills } from "../../../apis/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export default function Cv1({ toGenerate, personalInfo, experience, education, projects, technologies, programmingLanguages }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], technologies: Technology[], programmingLanguages: Technology[] }) {
+export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills?: Skills }) {
     const { name, email, phone, github, jobTitle } = personalInfo;
 
     return (
-        <div className={`bg-white text-[13px] leading-[1.15rem] shadow-lg print:shadow-none ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8"}`}>
+        <div className={`bg-white text-[13px] leading-[1.15rem] shadow-lg print:shadow-none ${toGenerate ? "cv-constraints" : "2xl:scale-95 p-10 cv-constraints-web"}`}>
             {/* Header */}
             <header className="text-center mb-4">
                 <h1 className={`font-bold tracking-tight ${toGenerate ? "text-4xl" : "text-3xl"}`}>{name}</h1>
                 <p className={`text-gray-600 font-bold ${toGenerate ? "text-xl" : "text-lg"}`}>{jobTitle}</p>
-                <div className={`${toGenerate ? "text-[16px]" : "text-[12px]"}`}>
+                <div className={`${toGenerate ? "text-[16px]" : "text-[14px]"}`}>
                     <span>{phone}</span>
                     {email && (
                         <>
@@ -33,7 +33,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
             </header>
 
             {/* Sections */}
-            <div className={`space-y-5 ${toGenerate ? "text-[16px]" : "text-xs"}`}>
+            <div className={`space-y-5 ${toGenerate ? "text-[16px]" : "text-sm"}`}>
                 {/* Education */}
                 {education.length > 0 && (
                     <section>
@@ -106,21 +106,12 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 )}
 
                 {/* Skills */}
-                {(technologies.length > 0 || programmingLanguages.length > 0) && (
+                {skills?.description && (
                     <section>
-                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Technologies and Languages</h2>
-                        <ul className="mt-2 list-disc list-inside space-y-1">
-                            {programmingLanguages.length > 0 && (
-                                <li>
-                                    <span>{programmingLanguages.map((t) => t.technology).filter(Boolean).join(", ")}</span>
-                                </li>
-                            )}
-                            {technologies.length > 0 && (
-                                <li>
-                                    <span>{technologies.map((t) => t.technology).filter(Boolean).join(", ")}</span>
-                                </li>
-                            )}
-                        </ul>
+                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Skills</h2>
+                        <div className="markdown-content mt-1">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{skills.description}</ReactMarkdown>
+                        </div>
                     </section>
                 )}
             </div>
