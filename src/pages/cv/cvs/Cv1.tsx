@@ -8,13 +8,13 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
     const { name, email, phone, github, jobTitle } = personalInfo;
 
     return (
-        <div className={`bg-white ${toGenerate ? "leading-[1.15rem] cv-constraints" : "cv-constraints-web"}`}>
-            <div className="inner-cv-constraints-web overflow-hidden">
+        <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-75 origin-top fixed top-10"}`}>
+            <div className={`inner-cv-constraints-web ${toGenerate ? "" : "overflow-hidden"}`}>
             {/* Header */}
-            <header className={`text-center ${toGenerate ? "mb-4" : "mb-2"}`}>
-                <h1 className={`font-bold tracking-tight ${toGenerate ? "text-4xl" : "text-xl"}`}>{name}</h1>
-                <p className={`text-gray-600 font-bold ${toGenerate ? "text-xl" : "text-xs"}`}>{jobTitle}</p>
-                <div className={`${toGenerate ? "text-[16px]" : "text-[10px]"}`}>
+            <header className="text-center mb-4">
+                <h1 className="font-bold tracking-tight text-4xl">{name}</h1>
+                <p className="text-gray-600 font-bold text-xl">{jobTitle}</p>
+                <div className="text-[16px]">
                     <span>{phone}</span>
                     {email && (
                         <>
@@ -36,12 +36,12 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
             </header>
 
             {/* Sections */}
-            <div className={`${toGenerate ? "text-[16px] space-y-5" : "text-[10px] space-y-1"}`}>
+            <div className="text-[16px] space-y-5">
                 {/* Education */}
                 {education.length > 0 && (
                     <section>
-                        <SectionTitle title="Education" toGenerate={toGenerate} />
-                        <SectionListContainer toGenerate={toGenerate}>
+                        <SectionTitle title="Education" />
+                        <SectionListContainer>
                             {education.map((edu) => (
                                 <div key={edu.id}>
                                     <div className="flex justify-between">
@@ -50,10 +50,10 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                                             {edu.degree && <span> — {edu.degree}</span>}
                                             {edu.fieldOfStudy && <span> in {edu.fieldOfStudy}</span>}
                                         </div>
-                                        <div>{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ""}</div>
+                                        <div >{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ""}</div>
                                     </div>
                                     {edu.description && (
-                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
+                                        <div className="markdown-content mt-1">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{edu.description}</ReactMarkdown>
                                         </div>
                                     )}
@@ -66,8 +66,8 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 {/* Experience */}
                 {experience.length > 0 && (
                     <section>
-                        <SectionTitle title="Experience" toGenerate={toGenerate} />
-                        <SectionListContainer toGenerate={toGenerate}>
+                        <SectionTitle title="Experience" />
+                        <SectionListContainer>
                             {experience.map((exp) => (
                                 <div key={exp.id}>
                                     <div className="flex justify-between">
@@ -77,9 +77,9 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                                         </div>
                                         <div className="whitespace-nowrap">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ""}</div>
                                     </div>
-                                    <div>{exp.city}</div>
+                                    <div className="mt-0.5">{exp.city}</div>
                                     {exp.description && (
-                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
+                                        <div className="markdown-content mt-1">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{exp.description}</ReactMarkdown>
                                         </div>
                                     )}
@@ -92,13 +92,13 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 {/* Projects */}
                 {projects.length > 0 && (
                     <section>
-                        <SectionTitle title="Projects" toGenerate={toGenerate} />
-                        <SectionListContainer toGenerate={toGenerate}>
+                        <SectionTitle title="Projects" />
+                        <SectionListContainer>
                             {projects.map((proj) => (
                                 <div key={proj.id}>
                                     <div className="font-bold">{`${proj.name} ${proj.technologies && proj.technologies.length > 0 ? `(${proj.technologies.join(", ")})` : ""}`}</div>
                                     {proj.description && (
-                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
+                                        <div className="markdown-content mt-1">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{proj.description}</ReactMarkdown>
                                         </div>
                                     )}
@@ -111,7 +111,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 {/* Skills */}
                 {skills?.description && (
                     <section>
-                        <SectionTitle title="Skills" toGenerate={toGenerate} />
+                        <SectionTitle title="Skills" />
                         <div className="markdown-content">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{skills.description}</ReactMarkdown>
                         </div>

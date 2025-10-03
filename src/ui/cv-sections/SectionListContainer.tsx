@@ -1,6 +1,6 @@
-export default function SectionListContainer({ children, toGenerate }: { children: React.ReactNode, toGenerate?: boolean }) {
+export default function SectionListContainer({ children }: { children: React.ReactNode }) {
     return (
-        <div className={`${toGenerate ? "space-y-4" : "space-y-1"}`}>
+        <div className={"space-y-4"}>
             {children}
         </div>
     )
