@@ -1,17 +1,20 @@
 import type { Education, Experience, PersonalInfo, Project, Skills } from "../../../apis/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import SectionTitle from "../../../ui/cv-sections/SectionTitle";
+import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
 
 export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills?: Skills }) {
     const { name, email, phone, github, jobTitle } = personalInfo;
 
     return (
-        <div className={`bg-white text-[13px] leading-[1.15rem] shadow-lg print:shadow-none ${toGenerate ? "cv-constraints" : "2xl:scale-95 p-10 cv-constraints-web"}`}>
+        <div className={`bg-white ${toGenerate ? "leading-[1.15rem] cv-constraints" : "cv-constraints-web"}`}>
+            <div className="inner-cv-constraints-web overflow-hidden">
             {/* Header */}
-            <header className="text-center mb-4">
-                <h1 className={`font-bold tracking-tight ${toGenerate ? "text-4xl" : "text-3xl"}`}>{name}</h1>
-                <p className={`text-gray-600 font-bold ${toGenerate ? "text-xl" : "text-lg"}`}>{jobTitle}</p>
-                <div className={`${toGenerate ? "text-[16px]" : "text-[14px]"}`}>
+            <header className={`text-center ${toGenerate ? "mb-4" : "mb-2"}`}>
+                <h1 className={`font-bold tracking-tight ${toGenerate ? "text-4xl" : "text-xl"}`}>{name}</h1>
+                <p className={`text-gray-600 font-bold ${toGenerate ? "text-xl" : "text-xs"}`}>{jobTitle}</p>
+                <div className={`${toGenerate ? "text-[16px]" : "text-[10px]"}`}>
                     <span>{phone}</span>
                     {email && (
                         <>
@@ -33,12 +36,12 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
             </header>
 
             {/* Sections */}
-            <div className={`space-y-5 ${toGenerate ? "text-[16px]" : "text-sm"}`}>
+            <div className={`${toGenerate ? "text-[16px] space-y-5" : "text-[10px] space-y-1"}`}>
                 {/* Education */}
                 {education.length > 0 && (
                     <section>
-                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Education</h2>
-                        <div className="mt-2 space-y-5">
+                        <SectionTitle title="Education" toGenerate={toGenerate} />
+                        <SectionListContainer toGenerate={toGenerate}>
                             {education.map((edu) => (
                                 <div key={edu.id}>
                                     <div className="flex justify-between">
@@ -50,21 +53,21 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                                         <div>{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ""}</div>
                                     </div>
                                     {edu.description && (
-                                        <div className="markdown-content mt-1">
+                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{edu.description}</ReactMarkdown>
                                         </div>
                                     )}
                                 </div>
                             ))}
-                        </div>
+                        </SectionListContainer>
                     </section>
                 )}
 
                 {/* Experience */}
                 {experience.length > 0 && (
                     <section>
-                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Experience</h2>
-                        <div className="mt-2 space-y-4">
+                        <SectionTitle title="Experience" toGenerate={toGenerate} />
+                        <SectionListContainer toGenerate={toGenerate}>
                             {experience.map((exp) => (
                                 <div key={exp.id}>
                                     <div className="flex justify-between">
@@ -76,44 +79,45 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                                     </div>
                                     <div>{exp.city}</div>
                                     {exp.description && (
-                                        <div className="markdown-content mt-1">
+                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{exp.description}</ReactMarkdown>
                                         </div>
                                     )}
                                 </div>
                             ))}
-                        </div>
+                        </SectionListContainer>
                     </section>
                 )}
 
                 {/* Projects */}
                 {projects.length > 0 && (
                     <section>
-                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Projects</h2>
-                        <div className="mt-2 space-y-4">
+                        <SectionTitle title="Projects" toGenerate={toGenerate} />
+                        <SectionListContainer toGenerate={toGenerate}>
                             {projects.map((proj) => (
                                 <div key={proj.id}>
                                     <div className="font-bold">{`${proj.name} ${proj.technologies && proj.technologies.length > 0 ? `(${proj.technologies.join(", ")})` : ""}`}</div>
                                     {proj.description && (
-                                        <div className="markdown-content mt-1">
+                                        <div className={`markdown-content ${toGenerate ? "mt-1" : ""}`}>
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{proj.description}</ReactMarkdown>
                                         </div>
                                     )}
                                 </div>
                             ))}
-                        </div>
+                        </SectionListContainer>
                     </section>
                 )}
 
                 {/* Skills */}
                 {skills?.description && (
                     <section>
-                        <h2 className={`font-bold tracking-wide border-b border-black mb-2 italic ${toGenerate ? "text-[17px]" : ""}`}>Skills</h2>
-                        <div className="markdown-content mt-1">
+                        <SectionTitle title="Skills" toGenerate={toGenerate} />
+                        <div className="markdown-content">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{skills.description}</ReactMarkdown>
                         </div>
                     </section>
                 )}
+            </div>
             </div>
         </div>
     );

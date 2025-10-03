@@ -3,8 +3,12 @@
     @apply grid grid-cols-2 gap-x-6 items-end;
 }
 .cv-constraints-web {
-    width: 210mm;
-    height: 333mm;
+    width: 680px;
+    height: 850px;
+    padding: 30px;
+}
+.inner-cv-constraints-web {
+    height: 790px;
 }
 .cv-constraints {
     width: 210mm;

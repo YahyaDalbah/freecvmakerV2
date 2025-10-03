@@ -1,11 +1,11 @@
-import DropdownMenu from "../../ui/DropdownMenu";
-import GridInputsContainer from "../../ui/GridInputsContainer";
-import SectionTitle from "../../ui/SectionTitle";
-import TextAreaInput from "../../ui/inputs/TextAreaInput";
-import TextInput from "../../ui/inputs/TextInput";
+import DropdownMenu from "../../ui/cv-editing-section/DropdownMenu";
+import GridInputsContainer from "../../ui/cv-editing-section/GridInputsContainer";
+import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
+import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
+import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
 import type { Education, Experience, Project, Skills } from "../../apis/types";
 import { useState } from "react";
-import Button from "../../ui/buttons/Button";
+import Button from "../../ui/cv-editing-section/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-icons";
 import Cv1 from "./cvs/Cv1";
