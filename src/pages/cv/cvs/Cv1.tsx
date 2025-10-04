@@ -7,6 +7,29 @@ import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
 export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills?: Skills }) {
     const { name, email, phone, github, jobTitle } = personalInfo;
 
+    function isAnyFieldFilled(section: any) {
+        return Object.keys(section).some(key => {
+            console.log(key)
+            if (key === 'id') return false;
+      
+            const value = section[key];
+      
+            if (value === undefined || value === null) return false;
+      
+            // If it's a string → check non-empty after trimming
+            if (typeof value === 'string') {
+              return value.trim() !== '';
+            }
+      
+            // If it's an array of strings → check if any non-empty
+            if (Array.isArray(value)) {
+              return value.some(v => typeof v === 'string' && v.trim() !== '');
+            }
+      
+            return false;
+        })
+      }
+
     return (
         <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-75 origin-top fixed top-10"}`}>
             <div className={`inner-cv-constraints-web ${toGenerate ? "" : "overflow-hidden"}`}>
@@ -42,7 +65,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     <section>
                         <SectionTitle title="Education" />
                         <SectionListContainer>
-                            {education.map((edu) => (
+                            {education.map((edu) => isAnyFieldFilled(edu) && (
                                 <div key={edu.id}>
                                     <div className="flex justify-between">
                                         <div>
@@ -68,7 +91,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     <section>
                         <SectionTitle title="Experience" />
                         <SectionListContainer>
-                            {experience.map((exp) => (
+                            {experience.map((exp) => isAnyFieldFilled(exp) && (
                                 <div key={exp.id}>
                                     <div className="flex justify-between">
                                         <div>
@@ -94,7 +117,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     <section>
                         <SectionTitle title="Projects" />
                         <SectionListContainer>
-                            {projects.map((proj) => (
+                            {projects.map((proj) => isAnyFieldFilled(proj) && (
                                 <div key={proj.id}>
                                     <div className="font-bold">{`${proj.name} ${proj.technologies && proj.technologies.length > 0 ? `(${proj.technologies.join(", ")})` : ""}`}</div>
                                     {proj.description && (

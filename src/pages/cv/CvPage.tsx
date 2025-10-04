@@ -211,8 +211,8 @@ export default function CvPage() {
         saveAs(blob, "cv.pdf");
     }
     return (
-        <div className="relative grid grid-cols-1 2xl:grid-cols-2">
-            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} 2xl:flex flex-col gap-12 p-12`}>
+        <div className="relative grid grid-cols-1 xl:grid-cols-2">
+            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12`}>
                 {/* Personal Info */}
                 <div>
                     <SectionTitle title="Personal Info" />
@@ -291,11 +291,11 @@ export default function CvPage() {
                     </GridInputsContainer>
                 </div>
             </div>
-            <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} 2xl:flex flex-col items-center gap-8 pt-6`}>
-                <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-4 cursor-pointer fixed">Generate PDF</button>
+            <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>
+                <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-4 cursor-pointer fixed top-2 z-10">Generate PDF</button>
                 <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} skills={skills} />
             </div>
-            <button onClick={() => setShowCvOnSmall(prev => !prev)} className="2xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
+            <button onClick={() => setShowCvOnSmall(prev => !prev)} className="xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
                 <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />
             </button>
         </div>
