@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Cv1 from "./cvs/Cv1";
-import type { Education, Experience, PersonalInfo, Project, Skills } from "../../apis/types";
+import type { Education, Experience, PersonalInfo, Project, Skill } from "../../apis/types";
 
 export default function PrintCvPage() {
   const [params] = useSearchParams();
@@ -29,7 +29,7 @@ export default function PrintCvPage() {
         experience: Experience[];
         education: Education[];
         projects: Project[];
-        skills?: Skills;
+        skills: Skill[];
       };
     } catch {
       return {
@@ -37,7 +37,7 @@ export default function PrintCvPage() {
         experience: [],
         education: [],
         projects: [],
-        skills: { description: "" },
+        skills: [],
       } as any;
     }
   }, [params]);

@@ -3,7 +3,7 @@ import GridInputsContainer from "../../ui/cv-editing-section/GridInputsContainer
 import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
 import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
-import type { Education, Experience, Project, Skills } from "../../apis/types";
+import type { Education, Experience, Project, Skill } from "../../apis/types";
 import { useState } from "react";
 import Button from "../../ui/cv-editing-section/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -121,9 +121,16 @@ export default function CvPage() {
         }
     ]);
     
-    const [skills, setSkills] = useState<Skills>({
-        description: '- React, TypeScript, Node.js, GraphQL\n- Strong in problem solving and clean code.'
-    });
+    const [skills, setSkills] = useState<Skill[]>([
+        {
+            id: '1',
+            description: 'React, TypeScript, Node.js, GraphQL'
+        },
+        {
+            id: '2',
+            description: 'Strong in problem solving and clean code.'
+        }
+    ]);
     
     const [projects, setProjects] = useState<Project[]>([
         {
@@ -158,8 +165,10 @@ export default function CvPage() {
         ));
     };
 
-    const updateSkills = (value: string) => {
-        setSkills(prev => ({ ...prev, description: value }));
+    const updateSkills = (id: string, value: string) => {
+        setSkills(prev => prev.map(item =>
+            item.id === id ? { ...item, description: value } : item
+        ));
     };
 
     const updateProject = (id: string, field: keyof Project, value: string | string[]) => {
@@ -180,7 +189,12 @@ export default function CvPage() {
     function deleteEducation(id: string) {
         setEducation(education.filter(item => item.id !== id));
     }
-    
+    function addSkill() {
+        setSkills([...skills, { id: generateId(), description: '' }]);
+    }
+    function deleteSkill(id: string) {
+        setSkills(skills.filter(item => item.id !== id));
+    }
     function addProject() {
         setProjects([...projects, { id: generateId(), name: '', description: '', technologies: [] }]);
     }
@@ -286,9 +300,16 @@ export default function CvPage() {
                 {/* Skills */}
                 <div>
                     <SectionTitle title="Skills" />
-                    <GridInputsContainer>
-                        <TextAreaInput span={true} name="skillsDescription" value={skills.description ?? ''} onChange={(value) => updateSkills(value)} />
-                    </GridInputsContainer>
+                    <div className="flex flex-col gap-4">
+                        {skills.map((skill) => (
+                            <DropdownMenu title={skill.description} onDelete={() => deleteSkill(skill.id)} key={skill.id}>
+                                <GridInputsContainer>
+                                    <TextInput name="skillsDescription" label="Skills" type="text" placeholder="Enter related skills" value={skill.description} onChange={(e) => updateSkills(skill.id, e.target.value)} />
+                                </GridInputsContainer>
+                            </DropdownMenu>
+                        ))}
+                        <Button variant="link" onClick={addSkill}><FontAwesomeIcon icon={faPlus} /> Add Skill</Button>
+                    </div>
                 </div>
             </div>
             <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>

@@ -7,7 +7,7 @@
     height: 320mm;
 }
 .inner-cv-constraints-web {
-    height: calc(320mm - 64px);
+    height: calc(322.3mm - 64px);
 }
 .cv-constraints {
     width: 210mm;
@@ -18,14 +18,6 @@
 .markdown-content ul {
     list-style-type: disc;
     padding-left: 1.25rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
-}
-.markdown-content ol {
-    list-style-type: decimal;
-    padding-left: 1.25rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
 }
 .markdown-content li {
     margin: 0.1rem 0;
@@ -36,7 +28,6 @@
     list-style-type: disc !important;
     padding-left: 1.25rem !important;
 }
-.wmde-markdown ol {
-    list-style-type: decimal !important;
-    padding-left: 1.25rem !important;
+li {
+    margin: 0.1rem 0 !important;
 }
