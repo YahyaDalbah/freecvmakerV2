@@ -7,7 +7,7 @@
     height: 320mm;
 }
 .inner-cv-constraints-web {
-    height: calc(322.3mm - 64px);
+    height: calc(320mm - 64px);
 }
 .cv-constraints {
     width: 210mm;
