@@ -374,7 +374,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                 {/* Experience */}
                 {(experience.length > 0 || showExperienceTitle) && (
                     <section>
-                        <SectionTitle title={showExperienceTitle ? "Experience" : ""} />
+                        <SectionTitle title={showExperienceTitle || toGenerate ? "Experience" : ""} />
                         <SectionListContainer>
                             {experience.map((exp) => isAnyFieldFilled(exp) && (
                                 <div key={exp.id}>
@@ -400,7 +400,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                 {/* Education */}
                 {(education.length > 0 || showEducationTitle) && (
                     <section>
-                        <SectionTitle title={showEducationTitle ? "Education" : ""} />
+                        <SectionTitle title={showEducationTitle || toGenerate ? "Education" : ""} />
                         <SectionListContainer>
                             {education.map((edu) => isAnyFieldFilled(edu) && (
                                 <div key={edu.id}>
@@ -426,7 +426,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                 {/* Projects */}
                 {(projects.length > 0 || showProjectsTitle) && (
                     <section>
-                        <SectionTitle title={showProjectsTitle ? "Projects" : ""} />
+                        <SectionTitle title={showProjectsTitle || toGenerate ? "Projects" : ""} />
                         <SectionListContainer>
                             {projects.map((proj) => isAnyFieldFilled(proj) && (
                                 <div key={proj.id}>
@@ -445,7 +445,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                 {/* Skills */}
                 {(skills.length > 0 || showSkillsTitle) && (
                     <section>
-                        <SectionTitle title={showSkillsTitle ? "Skills" : ""} />
+                        <SectionTitle title={showSkillsTitle || toGenerate ? "Skills" : ""} />
                         <ul className="list-disc pl-5">
                             {skills.map((skill) => isAnyFieldFilled(skill) && (
                                 <li key={skill.id}>{skill.description}</li>

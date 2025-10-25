@@ -142,7 +142,7 @@ export default function CvPage() {
         {
             id: '2',
             name: 'E-commerce Store',
-            description: 'Full-featured online store with product search, cart, and payment system.',
+            description: '',
             technologies: ['Next.js', 'MongoDB', 'Stripe']
         }
     ]);
