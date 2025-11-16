@@ -30,6 +30,309 @@ type PageContent = {
     showSkillsTitle?: boolean;
 };
 
+// Extended type to mark continuation items (show only description, no header)
+type ContinuationExperience = Experience & { isContinuation?: boolean };
+type ContinuationEducation = Education & { isContinuation?: boolean };
+type ContinuationProject = Project & { isContinuation?: boolean };
+
+// Generic type for sections that can be split
+type SplittableItem = Experience | Education | Project;
+type ContinuationItem = ContinuationExperience | ContinuationEducation | ContinuationProject;
+
+// Configuration for rendering different section types
+interface SectionConfig<T extends SplittableItem> {
+    renderHeader: (item: T) => string;
+    renderDescription: (item: T) => string;
+    getDescription: (item: T) => string | undefined;
+    hasDescription: (item: T) => boolean;
+}
+
+// Helper to render markdown to HTML string (simplified - handles common patterns)
+function renderMarkdownToHtml(markdown: string): string {
+    if (!markdown) return '';
+    
+    let html = markdown;
+    
+    // Convert markdown lists to HTML lists
+    const lines = html.split('\n');
+    let inList = false;
+    let result = '';
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const isListItem = line.trim().startsWith('- ') || line.trim().startsWith('* ');
+        
+        if (isListItem) {
+            if (!inList) {
+                result += '<ul class="list-disc pl-5">';
+                inList = true;
+            }
+            result += `<li class="leading-[1.15rem]">${line.trim().substring(2)}</li>`;
+        } else {
+            if (inList) {
+                result += '</ul>';
+                inList = false;
+            }
+            if (line.trim()) {
+                result += `<p class="leading-[1.15rem]">${line}</p>`;
+            }
+        }
+    }
+    
+    if (inList) {
+        result += '</ul>';
+    }
+    
+    return result;
+}
+
+// Generic function to process any section with splitting support
+function processSection<T extends SplittableItem>(
+    items: T[],
+    config: SectionConfig<T>,
+    currentPageContent: PageContent,
+    currentHeight: number,
+    maxPageHeight: number,
+    sectionTitleHeight: number,
+    innerSectionSpacing: number,
+    sectionSpacing: number,
+    measureHeight: (html: string) => number,
+    newPages: PageContent[],
+    sectionKey: 'experience' | 'education' | 'projects'
+): { currentPageContent: PageContent; currentHeight: number; newPages: PageContent[] } {
+    
+    // Add spacing before section
+    currentHeight += sectionSpacing;
+    
+    // Check if section title fits
+    if (currentHeight + sectionTitleHeight > maxPageHeight) {
+        // Section title doesn't fit - move to new page
+        newPages.push({ ...currentPageContent });
+        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+        currentHeight = 0;
+    }
+    
+    // Set the section title flag
+    if (sectionKey === 'experience') currentPageContent.showExperienceTitle = true;
+    if (sectionKey === 'education') currentPageContent.showEducationTitle = true;
+    if (sectionKey === 'projects') currentPageContent.showProjectsTitle = true;
+    
+    currentHeight += sectionTitleHeight;
+    
+    // Check if first item's header fits with the title (look-ahead)
+    const firstItemHasContent = items.length > 0 && isAnyFieldFilled(items[0]);
+    if (firstItemHasContent) {
+        const firstItemHeaderHtml = `
+            <div class="leading-[1.15rem] text-[16px]">
+                ${config.renderHeader(items[0])}
+            </div>
+        `;
+        const firstItemHeaderHeight = measureHeight(firstItemHeaderHtml) + innerSectionSpacing;
+        
+        // If first item's header doesn't fit with title, move items to next page (keep title on current page)
+        if (currentHeight + firstItemHeaderHeight > maxPageHeight) {
+            console.log(`📋 Section title "${sectionKey}" fits, but first item's header overflows - moving items to next page`);
+            newPages.push({ ...currentPageContent });
+            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+            currentHeight = 0;
+            // Don't set title flag for next page - title stays on previous page
+        }
+    }
+
+    // Process each item
+    for (const item of items) {
+        let remainingItem: T | null = item;
+        
+        while (remainingItem) {
+            const itemName = (remainingItem as any).school || (remainingItem as any).jobTitle || (remainingItem as any).name || 'unknown';
+            
+            // Measure item header only (without description)
+            const headerOnlyHtml = `
+                <div class="leading-[1.15rem] text-[16px]">
+                    ${config.renderHeader(remainingItem)}
+                </div>
+            `;
+            const headerHeight = measureHeight(headerOnlyHtml);
+            
+            // Measure full item (header + description)
+            const description = config.getDescription(remainingItem);
+            const renderedDescription = renderMarkdownToHtml(description || '');
+            const fullItemHtml = `
+                <div class="leading-[1.15rem] text-[16px]">
+                    ${config.renderHeader(remainingItem)}
+                    ${config.hasDescription(remainingItem) ? `<div class="markdown-content mt-1">${renderedDescription}</div>` : ''}
+                </div>
+            `;
+            const fullItemHeight = measureHeight(fullItemHtml) + innerSectionSpacing;
+
+            console.log(`Checking ${sectionKey} "${itemName}": currentHeight=${currentHeight}, headerHeight=${headerHeight}, fullItemHeight=${fullItemHeight}, maxPageHeight=${maxPageHeight}`);
+            
+            // Case 1: Full item fits
+            if (currentHeight + fullItemHeight <= maxPageHeight) {
+                console.log(`✓ Full item fits - adding to page`);
+                (currentPageContent[sectionKey] as T[]).push(remainingItem);
+                currentHeight += fullItemHeight;
+                break; // Done with this item
+            }
+            
+            // Case 2: Header fits but description doesn't
+            if (currentHeight + headerHeight <= maxPageHeight && config.hasDescription(remainingItem)) {
+                console.log(`📄 Header fits but description overflows`);
+                
+                // Try to split the description
+                const baseHtml = `
+                    <div class="leading-[1.15rem] text-[16px]">
+                        ${config.renderHeader(remainingItem)}
+                        <div class="markdown-content mt-1">DESCRIPTION_PLACEHOLDER</div>
+                    </div>
+                `;
+                
+                const splitIndex = findDescriptionSplitPoint(
+                    baseHtml,
+                    config.getDescription(remainingItem)!,
+                    maxPageHeight - currentHeight,
+                    measureHeight,
+                    renderMarkdownToHtml
+                );
+                
+                if (splitIndex !== null) {
+                    // Split the description
+                    const tokens: string[] = [];
+                    const parts = config.getDescription(remainingItem)!.split(/(\n)/);
+                    for (const part of parts) {
+                        if (part === '\n') {
+                            tokens.push(part);
+                        } else if (part) {
+                            tokens.push(...part.split(' ').filter(t => t));
+                        }
+                    }
+                    
+                    const firstPart: string = tokens.slice(0, splitIndex + 1).join(' ').replace(/ \n /g, '\n').replace(/ \n/g, '\n').replace(/\n /g, '\n');
+                    const secondPart: string = tokens.slice(splitIndex + 1).join(' ').replace(/ \n /g, '\n').replace(/ \n/g, '\n').replace(/\n /g, '\n');
+                    
+                    console.log(`✂️ Splitting description at token ${splitIndex}`);
+                    
+                    // Add item with first part of description to current page
+                    const firstPartItem = { ...remainingItem, description: firstPart } as T;
+                    (currentPageContent[sectionKey] as T[]).push(firstPartItem);
+                    
+                    // Save current page
+                    newPages.push({ ...currentPageContent });
+                    
+                    // Create new page for continuation (only description, no header)
+                    currentPageContent = {
+                        personalInfo: {},
+                        experience: [],
+                        education: [],
+                        projects: [],
+                        skills: []
+                    };
+                    
+                    const continuationItem = { 
+                        ...remainingItem, 
+                        description: secondPart,
+                        isContinuation: true 
+                    } as ContinuationItem as T;
+                    
+                    (currentPageContent[sectionKey] as T[]).push(continuationItem);
+                    currentHeight = measureHeight(`<div class="markdown-content">${renderMarkdownToHtml(secondPart)}</div>`) + innerSectionSpacing;
+                    
+                    break; // Done with this item
+                } else {
+                    // Can't split - add header to current page, move description to next
+                    console.log(`⏭️ Can't split description - moving entire description to next page`);
+                    
+                    // Add item without description to current page
+                    const headerOnlyItem = { ...remainingItem, description: '' } as T;
+                    (currentPageContent[sectionKey] as T[]).push(headerOnlyItem);
+                    
+                    // Save current page
+                    newPages.push({ ...currentPageContent });
+                    
+                    // Create new page with only the description
+                    currentPageContent = {
+                        personalInfo: {},
+                        experience: [],
+                        education: [],
+                        projects: [],
+                        skills: []
+                    };
+                    
+                    const descriptionOnlyItem = { 
+                        ...remainingItem,
+                        isContinuation: true 
+                    } as ContinuationItem as T;
+                    
+                    (currentPageContent[sectionKey] as T[]).push(descriptionOnlyItem);
+                    const descHeight = measureHeight(`<div class="markdown-content">${renderedDescription}</div>`) + innerSectionSpacing;
+                    currentHeight = descHeight;
+                    
+                    break; // Done with this item
+                }
+            }
+            
+            // Case 3: Even header doesn't fit - move entire item to next page
+            console.log(`⏭️ Item header doesn't fit - moving to next page`);
+            newPages.push({ ...currentPageContent });
+            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+            currentHeight = 0;
+            continue; // Try again on fresh page
+        }
+    }
+    
+    return { currentPageContent, currentHeight, newPages };
+}
+
+// Helper to find the split point in a description where overflow occurs
+function findDescriptionSplitPoint(
+    baseHtml: string,
+    description: string,
+    maxHeight: number,
+    measureHeight: (html: string) => number,
+    renderMarkdownToHtmlFn: (markdown: string) => string
+): number | null {
+    if (!description) return null;
+    
+    // Split on BOTH spaces and newlines to handle markdown lists properly
+    // This regex splits on spaces while preserving newlines as separate tokens
+    const tokens: string[] = [];
+    const parts = description.split(/(\n)/); // Split and keep newlines
+    
+    for (const part of parts) {
+        if (part === '\n') {
+            tokens.push(part);
+        } else if (part) {
+            tokens.push(...part.split(' ').filter(t => t));
+        }
+    }
+    
+    if (tokens.length <= 1) return null;
+    
+    // Binary search to find the split point
+    let left = 0;
+    let right = tokens.length;
+    let lastFittingIndex = -1;
+    
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        const testDescription = tokens.slice(0, mid + 1).join(' ').replace(/ \n /g, '\n').replace(/ \n/g, '\n').replace(/\n /g, '\n');
+        // Render markdown to HTML for accurate measurement
+        const renderedDescription = renderMarkdownToHtmlFn(testDescription);
+        const testHtml = baseHtml.replace('DESCRIPTION_PLACEHOLDER', renderedDescription);
+        const height = measureHeight(testHtml);
+        
+        if (height <= maxHeight) {
+            lastFittingIndex = mid;
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    
+    // Return the split index (if we found a valid split point)
+    return lastFittingIndex > 0 && lastFittingIndex < tokens.length - 1 ? lastFittingIndex : null;
+}
+
 export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState<PageContent[]>([
@@ -58,12 +361,13 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 return;
             }
 
-            // Create a measurement container
+            // Create a measurement container with proper styling
             const measureContainer = document.createElement('div');
             measureContainer.style.position = 'absolute';
             measureContainer.style.visibility = 'hidden';
             measureContainer.style.width = '210mm';
             measureContainer.style.left = '-9999px';
+            measureContainer.className = 'leading-[1.15rem] text-[16px]'; // Match CV styling
             document.body.appendChild(measureContainer);
 
             try {
@@ -80,7 +384,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 const innerSectionSpacing = 16;
                 const sectionTitleHeight = 26.4; // Approximate height for section title
 
-                const newPages: PageContent[] = [];
+                let newPages: PageContent[] = [];
                 let currentHeight = 0;
                 let currentPageContent: PageContent = {
                     personalInfo: {},
@@ -102,109 +406,100 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 currentPageContent.personalInfo = personalInfo;
                 currentHeight = headerHeight;
 
-                // Process experiences
+                // Section configurations
+                const experienceConfig: SectionConfig<Experience> = {
+                    renderHeader: (exp) => `
+                        <div class="flex justify-between">
+                            <div><span class="font-bold">${exp.jobTitle || ''}</span>${exp.company ? ` | ${exp.company}` : ''}</div>
+                            <div>${exp.startDate || ''}${exp.endDate ? ` – ${exp.endDate}` : ''}</div>
+                        </div>
+                        <div class="mt-0.5">${exp.city || ''}</div>
+                    `,
+                    renderDescription: (exp) => renderMarkdownToHtml(exp.description || ''),
+                    getDescription: (exp) => exp.description,
+                    hasDescription: (exp) => !!exp.description && exp.description.trim().length > 0
+                };
+
+                const educationConfig: SectionConfig<Education> = {
+                    renderHeader: (edu) => `
+                        <div class="flex justify-between">
+                            <div><span class="font-bold">${edu.school || ''}</span>${edu.degree ? ` — ${edu.degree}` : ''}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}</div>
+                            <div>${edu.startDate || ''}${edu.endDate ? ` – ${edu.endDate}` : ''}</div>
+                        </div>
+                    `,
+                    renderDescription: (edu) => renderMarkdownToHtml(edu.description || ''),
+                    getDescription: (edu) => edu.description,
+                    hasDescription: (edu) => !!edu.description && edu.description.trim().length > 0
+                };
+
+                const projectConfig: SectionConfig<Project> = {
+                    renderHeader: (proj) => `
+                        <div class="font-bold">${proj.name || ''} ${proj.technologies?.length ? `(${proj.technologies.join(', ')})` : ''}</div>
+                    `,
+                    renderDescription: (proj) => renderMarkdownToHtml(proj.description || ''),
+                    getDescription: (proj) => proj.description,
+                    hasDescription: (proj) => !!proj.description && proj.description.trim().length > 0
+                };
+
+                // Process all sections using generic function
                 if (validExperience.length > 0) {
-                    currentHeight += sectionSpacing;
-                    if (currentHeight + sectionTitleHeight > maxPageHeight) {
-                        // Start new page
-                        newPages.push({ ...currentPageContent });
-                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                        currentHeight = 0;
-                    }
-                    currentPageContent.showExperienceTitle = true;
-                    currentHeight += sectionTitleHeight;
-
-                    for (const [index, exp] of validExperience.entries()) {
-                        const expHtml = `
-                            <div class="leading-[1.15rem] text-[16px]">
-                                <div class="flex justify-between">
-                                    <div><span class="font-bold">${exp.jobTitle || ''}</span>${exp.company ? ` | ${exp.company}` : ''}</div>
-                                    <div>${exp.startDate || ''}${exp.endDate ? ` – ${exp.endDate}` : ''}</div>
-                                </div>
-                                <div class="mt-0.5">${exp.city || ''}</div>
-                                <div class="mt-1">${exp.description || ''}</div>
-                            </div>
-                        `;
-                        const expHeight = measureHeight(expHtml) + (index === validExperience.length - 1 ? 0 : innerSectionSpacing);
-
-                        if (currentHeight + expHeight > maxPageHeight) {
-                            // Start new page
-                            newPages.push({ ...currentPageContent });
-                            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                            currentHeight = index === 0 ? 0 : sectionTitleHeight; // Account for section title on new page
-                        }
-
-                        currentPageContent.experience.push(exp);
-                        currentHeight += expHeight;
-                    }
+                    const result = processSection(
+                        validExperience,
+                        experienceConfig,
+                        currentPageContent,
+                        currentHeight,
+                        maxPageHeight,
+                        sectionTitleHeight,
+                        innerSectionSpacing,
+                        sectionSpacing,
+                        measureHeight,
+                        newPages,
+                        'experience'
+                    );
+                    currentPageContent = result.currentPageContent;
+                    currentHeight = result.currentHeight;
+                    newPages = result.newPages;
                 }
 
-                // Process education
                 if (validEducation.length > 0) {
-                    currentHeight += sectionSpacing;
-                    if (currentHeight + sectionTitleHeight > maxPageHeight) {
-                        newPages.push({ ...currentPageContent });
-                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                        currentHeight = 0;
-                    }
-                    currentPageContent.showEducationTitle = true;
-                    currentHeight += sectionTitleHeight;
-
-                    for (const [index, edu] of validEducation.entries()) {
-                        const eduHtml = `
-                            <div class="leading-[1.15rem] text-[16px]">
-                                <div class="flex justify-between">
-                                    <div><span class="font-bold">${edu.school || ''}</span>${edu.degree ? ` — ${edu.degree}` : ''}</div>
-                                    <div>${edu.startDate || ''}${edu.endDate ? ` – ${edu.endDate}` : ''}</div>
-                                </div>
-                                <div class="mt-1">${edu.description || ''}</div>
-                            </div>
-                        `;
-                        const eduHeight = measureHeight(eduHtml) + (index === validEducation.length - 1 ? 0 : innerSectionSpacing);
-
-                        if (currentHeight + eduHeight > maxPageHeight) {
-                            newPages.push({ ...currentPageContent });
-                            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                            currentHeight = index === 0 ? 0 : sectionTitleHeight;
-                        }
-
-                        currentPageContent.education.push(edu);
-                        currentHeight += eduHeight;
-                    }
+                    const result = processSection(
+                        validEducation,
+                        educationConfig,
+                        currentPageContent,
+                        currentHeight,
+                        maxPageHeight,
+                        sectionTitleHeight,
+                        innerSectionSpacing,
+                        sectionSpacing,
+                        measureHeight,
+                        newPages,
+                        'education'
+                    );
+                    currentPageContent = result.currentPageContent;
+                    currentHeight = result.currentHeight;
+                    newPages = result.newPages;
                 }
 
-                // Process projects
                 if (validProjects.length > 0) {
-                    currentHeight += sectionSpacing;
-                    if (currentHeight + sectionTitleHeight > maxPageHeight) {
-                        newPages.push({ ...currentPageContent });
-                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                        currentHeight = 0;
-                    }
-                    currentPageContent.showProjectsTitle = true;
-                    currentHeight += sectionTitleHeight;
-
-                    for (const [index, proj] of validProjects.entries()) {
-                        const projHtml = `
-                            <div class="leading-[1.15rem] text-[16px]">
-                                <div class="font-bold">${proj.name || ''} ${proj.technologies?.length ? `(${proj.technologies.join(', ')})` : ''}</div>
-                                <div class="mt-1">${proj.description || ''}</div>
-                            </div>
-                        `;
-                        const projHeight = measureHeight(projHtml) + (index === validProjects.length - 1 ? 0 : innerSectionSpacing);
-
-                        if (currentHeight + projHeight > maxPageHeight) {
-                            newPages.push({ ...currentPageContent });
-                            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                            currentHeight = index === 0 ? 0 : sectionTitleHeight;
-                        }
-
-                        currentPageContent.projects.push(proj);
-                        currentHeight += projHeight;
-                    }
+                    const result = processSection(
+                        validProjects,
+                        projectConfig,
+                        currentPageContent,
+                        currentHeight,
+                        maxPageHeight,
+                        sectionTitleHeight,
+                        innerSectionSpacing,
+                        sectionSpacing,
+                        measureHeight,
+                        newPages,
+                        'projects'
+                    );
+                    currentPageContent = result.currentPageContent;
+                    currentHeight = result.currentHeight;
+                    newPages = result.newPages;
                 }
 
-                // Process skills
+                // Process skills (special case - no splitting needed for simple list items)
                 if (validSkills.length > 0) {
                     currentHeight += sectionSpacing;
                     if (currentHeight + sectionTitleHeight > maxPageHeight) {
@@ -231,9 +526,9 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 }
 
                 // Add the last page if it has content
-                if (currentPageContent.experience.length > 0 || 
-                    currentPageContent.education.length > 0 || 
-                    currentPageContent.projects.length > 0 || 
+                if (currentPageContent.experience.length > 0 ||
+                    currentPageContent.education.length > 0 ||
+                    currentPageContent.projects.length > 0 ||
                     currentPageContent.skills.length > 0 ||
                     Object.keys(currentPageContent.personalInfo).length > 0) {
                     newPages.push(currentPageContent);
@@ -246,6 +541,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
         };
 
         calculatePages();
+        
     }, [toGenerate, personalInfo, experience, education, projects, skills]);
 
     const handlePrevious = () => {
@@ -257,6 +553,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
     };
 
     const handlePageClick = (page: number) => {
+        console.log(pages);
         setCurrentPage(page);
     };
 
@@ -342,7 +639,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
     
     return (
         <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-71 origin-top fixed top-10"}`}>
-            <div className={`inner-cv-constraints-web ${toGenerate ? "" : "overflow-hidden"}`}>
+            <div className={`inner-cv-constraints-web`}>
             {/* Header */}
             <header className="text-center mb-4">
                 <h1 className="font-bold tracking-tight text-4xl">{name}</h1>
@@ -376,8 +673,13 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                     <section>
                         <SectionTitle title={showExperienceTitle || toGenerate ? "Experience" : ""} />
                         <SectionListContainer>
-                            {experience.map((exp) => isAnyFieldFilled(exp) && (
+                            {experience.map((exp) => {
+                                const isContinuation = (exp as ContinuationExperience).isContinuation;
+                                return isAnyFieldFilled(exp) && (
                                 <div key={exp.id}>
+                                        {/* Only show header if NOT a continuation */}
+                                        {!isContinuation && (
+                                            <>
                                     <div className="flex justify-between">
                                         <div>
                                             <span className="font-bold">{exp.jobTitle}</span>
@@ -386,13 +688,17 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                         <div className="whitespace-nowrap">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ""}</div>
                                     </div>
                                     <div className="mt-0.5">{exp.city}</div>
+                                            </>
+                                        )}
+                                        {/* Always show description */}
                                     {exp.description && (
-                                        <div className="markdown-content mt-1">
+                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{exp.description}</ReactMarkdown>
                                         </div>
                                     )}
                                 </div>
-                            ))}
+                                );
+                            })}
                         </SectionListContainer>
                     </section>
                 )}
@@ -402,23 +708,30 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                     <section>
                         <SectionTitle title={showEducationTitle || toGenerate ? "Education" : ""} />
                         <SectionListContainer>
-                            {education.map((edu) => isAnyFieldFilled(edu) && (
-                                <div key={edu.id}>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <span className="font-bold">{edu.school}</span>
-                                            {edu.degree && <span> — {edu.degree}</span>}
-                                            {edu.fieldOfStudy && <span> in {edu.fieldOfStudy}</span>}
-                                        </div>
-                                        <div >{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ""}</div>
+                            {education.map((edu) => {
+                                const isContinuation = (edu as ContinuationEducation).isContinuation;
+                                return isAnyFieldFilled(edu) && (
+                                    <div key={edu.id}>
+                                        {/* Only show header if NOT a continuation */}
+                                        {!isContinuation && (
+                                            <div className="flex justify-between">
+                                                <div>
+                                                    <span className="font-bold">{edu.school}</span>
+                                                    {edu.degree && <span> — {edu.degree}</span>}
+                                                    {edu.fieldOfStudy && <span> in {edu.fieldOfStudy}</span>}
+                                                </div>
+                                                <div >{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ""}</div>
+                                            </div>
+                                        )}
+                                        {/* Always show description */}
+                                        {edu.description && (
+                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{edu.description}</ReactMarkdown>
+                                            </div>
+                                        )}
                                     </div>
-                                    {edu.description && (
-                                        <div className="markdown-content mt-1">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{edu.description}</ReactMarkdown>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                );
+                            })}
                         </SectionListContainer>
                     </section>
                 )}
@@ -428,16 +741,23 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                     <section>
                         <SectionTitle title={showProjectsTitle || toGenerate ? "Projects" : ""} />
                         <SectionListContainer>
-                            {projects.map((proj) => isAnyFieldFilled(proj) && (
-                                <div key={proj.id}>
-                                    <div className="font-bold">{`${proj.name} ${proj.technologies && proj.technologies.length > 0 ? `(${proj.technologies.join(", ")})` : ""}`}</div>
-                                    {proj.description && (
-                                        <div className="markdown-content mt-1">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{proj.description}</ReactMarkdown>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                            {projects.map((proj) => {
+                                const isContinuation = (proj as ContinuationProject).isContinuation;
+                                return isAnyFieldFilled(proj) && (
+                                    <div key={proj.id}>
+                                        {/* Only show header if NOT a continuation */}
+                                        {!isContinuation && (
+                                            <div className="font-bold">{`${proj.name} ${proj.technologies && proj.technologies.length > 0 ? `(${proj.technologies.join(", ")})` : ""}`}</div>
+                                        )}
+                                        {/* Always show description */}
+                                        {proj.description && (
+                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{proj.description}</ReactMarkdown>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </SectionListContainer>
                     </section>
                 )}
