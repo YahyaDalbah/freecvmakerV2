@@ -55,11 +55,283 @@ export default function CvPage() {
     const [skills, setSkills] = useState<Skill[]>([
         {
             id: '1',
-            description: 'React, TypeScript, Node.js, GraphQL'
+            description: '1'
         },
         {
             id: '2',
-            description: 'Strong in problem solving and clean code.'
+            description: '2'
+        },
+        {
+            id: '3',
+            description: '3'
+        },
+        {
+            id: '4',
+            description: '4'
+        },
+        {
+            id: '5',
+            description: '5'
+        },
+        {
+            id: '6',
+            description: '6'
+        },
+        {
+            id: '7',
+            description: '7'
+        },
+        {
+            id: '8',
+            description: '8'
+        },
+        {
+            id: '9',
+            description: '9'
+        },
+        {
+            id: '10',
+            description: '10'
+        },
+        {
+            id: '11',
+            description: '11'
+        },
+        {
+            id: '12',
+            description: '12'
+        },
+        {
+            id: '13',
+            description: '13'
+        },
+        {
+            id: '14',
+            description: '14'
+        },
+        {
+            id: '15',
+            description: '15'
+        },
+        {
+            id: '16',
+            description: '16'
+        },
+        {
+            id: '17',
+            description: '17'
+        },
+        {
+            id: '18',
+            description: '18'
+        },
+        {
+            id: '19',
+            description: '19'
+        },
+        {
+            id: '20',
+            description: '20'
+        },
+        {
+            id: '21',
+            description: '21'
+        },
+        {
+            id: '22',
+            description: '22'
+        },
+        {
+            id: '23',
+            description: '23'
+        },
+        {
+            id: '24',
+            description: '24'
+        },
+        {
+            id: '25',
+            description: '25'
+        },
+        {
+            id: '26',
+            description: '26'
+        },
+        {
+            id: '27',
+            description: '27'
+        },
+        {
+            id: '28',
+            description: '28'
+        },
+        {
+            id: '29',
+            description: '29'
+        },
+        {
+            id: '30',
+            description: '30'
+        },
+        {
+            id: '31',
+            description: '31'
+        },
+        {
+            id: '32',
+            description: '32'
+        },
+        {
+            id: '33',
+            description: '33'
+        },
+        {
+            id: '34',
+            description: '34'
+        },
+        {
+            id: '35',
+            description: '35'
+        },
+        {
+            id: '36',
+            description: '36'
+        },
+        {
+            id: '37',
+            description: '37'
+        },
+        {
+            id: '38',
+            description: '38'
+        },
+        {
+            id: '39',
+            description: '39'
+        },
+        {
+            id: '40',
+            description: '40'
+        },
+        {
+            id: '41',
+            description: '41'
+        },
+        {
+            id: '42',
+            description: '42'
+        },
+        {
+            id: '43',
+            description: '43'
+        },
+        {
+            id: '44',
+            description: '44'
+        },
+        {
+            id: '45',
+            description: '45'
+        },
+        {
+            id: '46',
+            description: '46'
+        },
+        {
+            id: '47',
+            description: '47'
+        },
+        {
+            id: '48',
+            description: '48'
+        },
+        {
+            id: '49',
+            description: '49'
+        },
+        {
+            id: '50',
+            description: '50'
+        },
+        {
+            id: '51',
+            description: '51'
+        },
+        {
+            id: '52',
+            description: '52'
+        },
+        {
+            id: '53',
+            description: '53'
+        },
+        {
+            id: '54',
+            description: '54'
+        },
+        {
+            id: '55',
+            description: '55'
+        },
+        {
+            id: '56',
+            description: '56'
+        },
+        {
+            id: '57',
+            description: '57'
+        },
+        {
+            id: '58',
+            description: '58'
+        },
+        {
+            id: '59',
+            description: '59'
+        },
+        {
+            id: '60',
+            description: '60'
+        },
+        {
+            id: '61',
+            description: '61'
+        },
+        {
+            id: '62',
+            description: '62'
+        },
+        {
+            id: '63',
+            description: '63'
+        },
+        {
+            id: '64',
+            description: '64'
+        },
+        {
+            id: '65',
+            description: '65'
+        },
+        {
+            id: '66',
+            description: '66'
+        },
+        {
+            id: '67',
+            description: '67'
+        },
+        {
+            id: '68',
+            description: '68'
+        },
+        {
+            id: '69',
+            description: '69'
+        },
+        {
+            id: '70',
+            description: '70'
         }
     ]);
     

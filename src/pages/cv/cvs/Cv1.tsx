@@ -131,7 +131,6 @@ function processSection<T extends SplittableItem>(
         
         // If first item's header doesn't fit with title, move items to next page (keep title on current page)
         if (currentHeight + firstItemHeaderHeight > maxPageHeight) {
-            console.log(`📋 Section title "${sectionKey}" fits, but first item's header overflows - moving items to next page`);
             newPages.push({ ...currentPageContent });
             currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
             currentHeight = 0;
@@ -144,8 +143,6 @@ function processSection<T extends SplittableItem>(
         let remainingItem: T | null = item;
         
         while (remainingItem) {
-            const itemName = (remainingItem as any).school || (remainingItem as any).jobTitle || (remainingItem as any).name || 'unknown';
-            
             // Measure item header only (without description)
             const headerOnlyHtml = `
                 <div class="leading-[1.15rem] text-[16px]">
@@ -165,11 +162,9 @@ function processSection<T extends SplittableItem>(
             `;
             const fullItemHeight = measureHeight(fullItemHtml) + innerSectionSpacing;
 
-            console.log(`Checking ${sectionKey} "${itemName}": currentHeight=${currentHeight}, headerHeight=${headerHeight}, fullItemHeight=${fullItemHeight}, maxPageHeight=${maxPageHeight}`);
             
             // Case 1: Full item fits
             if (currentHeight + fullItemHeight <= maxPageHeight) {
-                console.log(`✓ Full item fits - adding to page`);
                 (currentPageContent[sectionKey] as T[]).push(remainingItem);
                 currentHeight += fullItemHeight;
                 break; // Done with this item
@@ -177,7 +172,6 @@ function processSection<T extends SplittableItem>(
             
             // Case 2: Header fits but description doesn't
             if (currentHeight + headerHeight <= maxPageHeight && config.hasDescription(remainingItem)) {
-                console.log(`📄 Header fits but description overflows`);
                 
                 // Try to split the description
                 const baseHtml = `
@@ -210,7 +204,6 @@ function processSection<T extends SplittableItem>(
                     const firstPart: string = tokens.slice(0, splitIndex + 1).join(' ').replace(/ \n /g, '\n').replace(/ \n/g, '\n').replace(/\n /g, '\n');
                     const secondPart: string = tokens.slice(splitIndex + 1).join(' ').replace(/ \n /g, '\n').replace(/ \n/g, '\n').replace(/\n /g, '\n');
                     
-                    console.log(`✂️ Splitting description at token ${splitIndex}`);
                     
                     // Add item with first part of description to current page
                     const firstPartItem = { ...remainingItem, description: firstPart } as T;
@@ -240,7 +233,6 @@ function processSection<T extends SplittableItem>(
                     break; // Done with this item
                 } else {
                     // Can't split - add header to current page, move description to next
-                    console.log(`⏭️ Can't split description - moving entire description to next page`);
                     
                     // Add item without description to current page
                     const headerOnlyItem = { ...remainingItem, description: '' } as T;
@@ -272,7 +264,6 @@ function processSection<T extends SplittableItem>(
             }
             
             // Case 3: Even header doesn't fit - move entire item to next page
-            console.log(`⏭️ Item header doesn't fit - moving to next page`);
             newPages.push({ ...currentPageContent });
             currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
             currentHeight = 0;
@@ -501,23 +492,44 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
 
                 // Process skills (special case - no splitting needed for simple list items)
                 if (validSkills.length > 0) {
+                    // Add spacing before section
                     currentHeight += sectionSpacing;
+                    
+                    // Check if section title fits
                     if (currentHeight + sectionTitleHeight > maxPageHeight) {
                         newPages.push({ ...currentPageContent });
                         currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
                         currentHeight = 0;
                     }
+                    
+                    // Set section title flag
                     currentPageContent.showSkillsTitle = true;
                     currentHeight += sectionTitleHeight;
+                    
+                    // Check if first skill fits with the title (look-ahead)
+                    const firstSkillHtml = `<ul class="list-disc pl-5"><li>${validSkills[0].description || ''}</li></ul>`;
+                    const firstSkillHeight = measureHeight(firstSkillHtml) + 3.2; // First skill has more spacing
+                    
+                    if (currentHeight + firstSkillHeight > maxPageHeight) {
+                        // Title fits but first skill doesn't - keep title, move skills to next page
+                        newPages.push({ ...currentPageContent });
+                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+                        currentHeight = 0;
+                        // Don't set title flag - title stays on previous page
+                    }
 
+                    // Process each skill
                     for (const [index, skill] of validSkills.entries()) {
-                        const skillHtml = `<li class="leading-[1.15rem] text-[16px]">${skill.description || ''}</li>`;
-                        const skillHeight = measureHeight(skillHtml) + (index === 0 ? 3.2 : 1.6);
+                        const skillHtml = `<ul class="list-disc pl-5"><li class="leading-[1.15rem] text-[16px]">${skill.description || ''}</li></ul>`;
+                        const skillHeight = measureHeight(skillHtml) - 3.6 + (index === 0 ? 3.2 : 1.6);
+                        console.log(measureHeight(skillHtml), measureHeight(skillHtml) - 3.6);
+
 
                         if (currentHeight + skillHeight > maxPageHeight) {
+                            // Skill doesn't fit - move to next page
                             newPages.push({ ...currentPageContent });
                             currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
-                            currentHeight = index === 0 ? 0 : sectionTitleHeight;
+                            currentHeight = 0; // No title on continuation pages
                         }
 
                         currentPageContent.skills.push(skill);
@@ -553,7 +565,6 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
     };
 
     const handlePageClick = (page: number) => {
-        console.log(pages);
         setCurrentPage(page);
     };
 
