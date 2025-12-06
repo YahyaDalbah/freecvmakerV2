@@ -386,11 +386,15 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 };
 
                 // Measure and add header (only on first page)
+                const linksHtml = (personalInfo.links || []).filter(link => link?.trim()).map((link, index) => 
+                    `${index > 0 ? '<span> | </span>' : ''}<a class="text-blue-600 underline" href="${link}">${link}</a>`
+                ).join('');
                 const headerHtml = `
                     <div class="text-center mb-4">
                         <h1 class="font-bold tracking-tight text-4xl">${personalInfo.name || ''}</h1>
                         <p class="text-gray-600 font-bold text-xl">${personalInfo.jobTitle || ''}</p>
                         <div class="text-[16px]">${personalInfo.phone || ''}</div>
+                        <div class="text-[16px]">${linksHtml}</div>
                     </div>
                 `;
                 const headerHeight = measureHeight(headerHtml);
@@ -646,7 +650,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
     showSkillsTitle?: boolean
 }) {
 
-    const { name, email, phone, github, jobTitle } = personalInfo;
+    const { name, email, phone, links, jobTitle } = personalInfo;
     
     return (
         <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-71 origin-top fixed top-10"}`}>
@@ -659,20 +663,22 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                     <span>{phone}</span>
                     {email && (
                         <>
-                            <span> | </span>
+                            {(phone && email) && <span> | </span>}
                             <a className="text-blue-600 underline" href={`mailto:${email}`}>
                                 {email}
                             </a>
                         </>
                     )}
-                    {github && (
-                        <>
-                            <span> | </span>
-                            <a className="text-blue-600 underline" href={github} target="_blank" rel="noopener noreferrer">
-                                {github}
+                </div>
+                <div className="text-[16px]">
+                    {links?.filter(link => link?.trim()).map((link, index) => (
+                        <span key={index}>
+                            {index > 0 && <span> | </span>}
+                            <a className="text-blue-600 underline" href={link} target="_blank" rel="noopener noreferrer">
+                                {link}
                             </a>
-                        </>
-                    )}
+                        </span>
+                    ))}
                 </div>
             </header>
 

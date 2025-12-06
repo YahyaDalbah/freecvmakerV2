@@ -23,7 +23,7 @@ export default function CvPage() {
         phone: '+1 (555) 123-4567',
         jobTitle: 'Full Stack Developer',
         city: 'New York, USA',
-        github: 'https://github.com/johndoe'
+        links: ['https://github.com/johndoe', 'https://linkedin.com/in/johndoe', '']
     });
     
     const [experience, setExperience] = useState<Experience[]>([
@@ -352,8 +352,16 @@ export default function CvPage() {
     
     
 
-    const updatePersonalInfo = (field: keyof typeof personalInfo, value: string) => {
+    const updatePersonalInfo = (field: keyof typeof personalInfo, value: string | string[]) => {
         setPersonalInfo(prev => ({ ...prev, [field]: value }));
+    };
+
+    const updateLink = (index: number, value: string) => {
+        setPersonalInfo(prev => {
+            const newLinks = [...(prev.links || ['', '', ''])];
+            newLinks[index] = value;
+            return { ...prev, links: newLinks };
+        });
     };
 
     const updateExperience = (id: string, field: keyof Experience, value: string) => {
@@ -439,7 +447,9 @@ export default function CvPage() {
                         <TextInput label="Phone" name="phone" type="tel" placeholder="Enter your phone" value={personalInfo.phone} onChange={(e) => updatePersonalInfo('phone', e.target.value)} />
                         <TextInput label="Job Title" name="jobTitle" type="text" placeholder="Enter your job title" value={personalInfo.jobTitle} onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)} />
                         <TextInput label="City" name="city" type="text" placeholder="Enter your city" value={personalInfo.city} onChange={(e) => updatePersonalInfo('city', e.target.value)} />
-                        <TextInput label="Important url (Github, linkedin, ...)" name="github" type="text" placeholder="Enter your url" value={personalInfo.github} onChange={(e) => updatePersonalInfo('github', e.target.value)} />
+                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link1" type="text" placeholder="Enter your url" value={personalInfo.links?.[0] || ''} onChange={(e) => updateLink(0, e.target.value)} />
+                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link2" type="text" placeholder="Enter your url" value={personalInfo.links?.[1] || ''} onChange={(e) => updateLink(1, e.target.value)} />
+                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link3" type="text" placeholder="Enter your url" value={personalInfo.links?.[2] || ''} onChange={(e) => updateLink(2, e.target.value)} />
                     </GridInputsContainer>
                 </div>
                 {/* Experience */}

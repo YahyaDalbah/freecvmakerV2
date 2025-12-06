@@ -33,5 +33,5 @@ export type PersonalInfo = {
     phone?: string;
     jobTitle?: string;
     city?: string;
-    github?: string;
+    links?: string[];
 }
