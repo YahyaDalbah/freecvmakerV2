@@ -447,9 +447,9 @@ export default function CvPage() {
                         <TextInput label="Phone" name="phone" type="tel" placeholder="Enter your phone" value={personalInfo.phone} onChange={(e) => updatePersonalInfo('phone', e.target.value)} />
                         <TextInput label="Job Title" name="jobTitle" type="text" placeholder="Enter your job title" value={personalInfo.jobTitle} onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)} />
                         <TextInput label="City" name="city" type="text" placeholder="Enter your city" value={personalInfo.city} onChange={(e) => updatePersonalInfo('city', e.target.value)} />
-                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link1" type="text" placeholder="Enter your url" value={personalInfo.links?.[0] || ''} onChange={(e) => updateLink(0, e.target.value)} />
-                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link2" type="text" placeholder="Enter your url" value={personalInfo.links?.[1] || ''} onChange={(e) => updateLink(1, e.target.value)} />
-                        <TextInput label="Important url (Github, Linkedin, Portfolio, ...)" name="link3" type="text" placeholder="Enter your url" value={personalInfo.links?.[2] || ''} onChange={(e) => updateLink(2, e.target.value)} />
+                        <TextInput label="Link 1 (Github, Linkedin, Portfolio, ...)" name="link1" type="text" placeholder="Enter your url" value={personalInfo.links?.[0] || ''} onChange={(e) => updateLink(0, e.target.value)} />
+                        <TextInput label="Link 2 (Github, Linkedin, Portfolio, ...)" name="link2" type="text" placeholder="Enter your url" value={personalInfo.links?.[1] || ''} onChange={(e) => updateLink(1, e.target.value)} />
+                        <TextInput label="Link 3 (Github, Linkedin, Portfolio, ...)" name="link3" type="text" placeholder="Enter your url" value={personalInfo.links?.[2] || ''} onChange={(e) => updateLink(2, e.target.value)} />
                     </GridInputsContainer>
                 </div>
                 {/* Experience */}
