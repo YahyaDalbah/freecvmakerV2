@@ -1,4 +1,4 @@
-import type { Education, Experience, PersonalInfo, Project, Skill } from "../../../apis/types";
+import type { Education, Experience, PersonalInfo, Project, Skill, Reference } from "../../../apis/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import SectionTitle from "../../../ui/cv-sections/SectionTitle";
@@ -24,20 +24,23 @@ type PageContent = {
     education: Education[];
     projects: Project[];
     skills: Skill[];
+    references: Reference[];
     showExperienceTitle?: boolean;
     showEducationTitle?: boolean;
     showProjectsTitle?: boolean;
     showSkillsTitle?: boolean;
+    showReferencesTitle?: boolean;
 };
 
 // Extended type to mark continuation items (show only description, no header)
 type ContinuationExperience = Experience & { isContinuation?: boolean };
 type ContinuationEducation = Education & { isContinuation?: boolean };
 type ContinuationProject = Project & { isContinuation?: boolean };
+type ContinuationReference = Reference & { isContinuation?: boolean };
 
 // Generic type for sections that can be split
-type SplittableItem = Experience | Education | Project;
-type ContinuationItem = ContinuationExperience | ContinuationEducation | ContinuationProject;
+type SplittableItem = Experience | Education | Project | Reference;
+type ContinuationItem = ContinuationExperience | ContinuationEducation | ContinuationProject | ContinuationReference;
 
 // Configuration for rendering different section types
 interface SectionConfig<T extends SplittableItem> {
@@ -98,7 +101,7 @@ function processSection<T extends SplittableItem>(
     sectionSpacing: number,
     measureHeight: (html: string) => number,
     newPages: PageContent[],
-    sectionKey: 'experience' | 'education' | 'projects'
+    sectionKey: 'experience' | 'education' | 'projects' | 'references'
 ): { currentPageContent: PageContent; currentHeight: number; newPages: PageContent[] } {
     
     // Add spacing before section
@@ -108,7 +111,7 @@ function processSection<T extends SplittableItem>(
     if (currentHeight + sectionTitleHeight > maxPageHeight) {
         // Section title doesn't fit - move to new page
         newPages.push({ ...currentPageContent });
-        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
         currentHeight = 0;
     }
     
@@ -116,6 +119,7 @@ function processSection<T extends SplittableItem>(
     if (sectionKey === 'experience') currentPageContent.showExperienceTitle = true;
     if (sectionKey === 'education') currentPageContent.showEducationTitle = true;
     if (sectionKey === 'projects') currentPageContent.showProjectsTitle = true;
+    if (sectionKey === 'references') currentPageContent.showReferencesTitle = true;
     
     currentHeight += sectionTitleHeight;
     
@@ -132,7 +136,7 @@ function processSection<T extends SplittableItem>(
         // If first item's header doesn't fit with title, move items to next page (keep title on current page)
         if (currentHeight + firstItemHeaderHeight > maxPageHeight) {
             newPages.push({ ...currentPageContent });
-            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
             currentHeight = 0;
             // Don't set title flag for next page - title stays on previous page
         }
@@ -218,7 +222,8 @@ function processSection<T extends SplittableItem>(
                         experience: [],
                         education: [],
                         projects: [],
-                        skills: []
+                        skills: [],
+                        references: []
                     };
                     
                     const continuationItem = { 
@@ -247,7 +252,8 @@ function processSection<T extends SplittableItem>(
                         experience: [],
                         education: [],
                         projects: [],
-                        skills: []
+                        skills: [],
+                        references: []
                     };
                     
                     const descriptionOnlyItem = { 
@@ -265,7 +271,7 @@ function processSection<T extends SplittableItem>(
             
             // Case 3: Even header doesn't fit - move entire item to next page
             newPages.push({ ...currentPageContent });
-            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
             currentHeight = 0;
             continue; // Try again on fresh page
         }
@@ -324,17 +330,17 @@ function findDescriptionSplitPoint(
     return lastFittingIndex > 0 && lastFittingIndex < tokens.length - 1 ? lastFittingIndex : null;
 }
 
-export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[] }) {
+export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills, references }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[], references: Reference[] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState<PageContent[]>([
-        { personalInfo, experience, education, projects, skills }
+        { personalInfo, experience, education, projects, skills, references }
     ]);
 
     // Calculate pagination based on content overflow by measuring actual rendered heights
     useEffect(() => {
         if (toGenerate) {
             // When generating PDF, show all content on one page
-            setPages([{ personalInfo, experience, education, projects, skills }]);
+            setPages([{ personalInfo, experience, education, projects, skills, references }]);
             return;
         }
 
@@ -344,11 +350,12 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
             const validEducation = education.filter(isAnyFieldFilled);
             const validProjects = projects.filter(isAnyFieldFilled);
             const validSkills = skills.filter(isAnyFieldFilled);
+            const validReferences = references.filter(isAnyFieldFilled);
 
             // If no content, show single empty page
             if (validExperience.length === 0 && validEducation.length === 0 && 
-                validProjects.length === 0 && validSkills.length === 0) {
-                setPages([{ personalInfo, experience: [], education: [], projects: [], skills: [] }]);
+                validProjects.length === 0 && validSkills.length === 0 && validReferences.length === 0) {
+                setPages([{ personalInfo, experience: [], education: [], projects: [], skills: [], references: [] }]);
                 return;
             }
 
@@ -382,7 +389,8 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     experience: [],
                     education: [],
                     projects: [],
-                    skills: []
+                    skills: [],
+                    references: []
                 };
 
                 // Measure and add header (only on first page)
@@ -434,6 +442,18 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     renderDescription: (proj) => renderMarkdownToHtml(proj.description || ''),
                     getDescription: (proj) => proj.description,
                     hasDescription: (proj) => !!proj.description && proj.description.trim().length > 0
+                };
+
+                const referenceConfig: SectionConfig<Reference> = {
+                    renderHeader: (ref) => `
+                        <div class="flex justify-between">
+                            <div><span class="font-bold">${ref.name || ''}</span>${ref.company ? ` | ${ref.company}` : ''}</div>
+                        </div>
+                        <div class="mt-0.5">${ref.email || ''} ${ref.phone ? ` | ${ref.phone}` : ''}</div>
+                    `,
+                    renderDescription: (ref) => renderMarkdownToHtml(ref.description || ''),
+                    getDescription: (ref) => ref.description,
+                    hasDescription: (ref) => !!ref.description && ref.description.trim().length > 0
                 };
 
                 // Process all sections using generic function
@@ -502,7 +522,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     // Check if section title fits
                     if (currentHeight + sectionTitleHeight > maxPageHeight) {
                         newPages.push({ ...currentPageContent });
-                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
                         currentHeight = 0;
                     }
                     
@@ -517,7 +537,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     if (currentHeight + firstSkillHeight > maxPageHeight) {
                         // Title fits but first skill doesn't - keep title, move skills to next page
                         newPages.push({ ...currentPageContent });
-                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
                         currentHeight = 0;
                         // Don't set title flag - title stays on previous page
                     }
@@ -532,7 +552,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                         if (currentHeight + skillHeight > maxPageHeight) {
                             // Skill doesn't fit - move to next page
                             newPages.push({ ...currentPageContent });
-                            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [] };
+                            currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
                             currentHeight = 0; // No title on continuation pages
                         }
 
@@ -541,16 +561,37 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                     }
                 }
 
+                // Process references (similar to experience)
+                if (validReferences.length > 0) {
+                    const result = processSection(
+                        validReferences,
+                        referenceConfig,
+                        currentPageContent,
+                        currentHeight,
+                        maxPageHeight,
+                        sectionTitleHeight,
+                        innerSectionSpacing,
+                        sectionSpacing,
+                        measureHeight,
+                        newPages,
+                        'references'
+                    );
+                    currentPageContent = result.currentPageContent;
+                    currentHeight = result.currentHeight;
+                    newPages = result.newPages;
+                }
+
                 // Add the last page if it has content
                 if (currentPageContent.experience.length > 0 ||
                     currentPageContent.education.length > 0 ||
                     currentPageContent.projects.length > 0 ||
                     currentPageContent.skills.length > 0 ||
+                    currentPageContent.references.length > 0 ||
                     Object.keys(currentPageContent.personalInfo).length > 0) {
                     newPages.push(currentPageContent);
                 }
 
-                setPages(newPages.length > 0 ? newPages : [{ personalInfo, experience, education, projects, skills }]);
+                setPages(newPages.length > 0 ? newPages : [{ personalInfo, experience, education, projects, skills, references }]);
             } finally {
                 document.body.removeChild(measureContainer);
             }
@@ -558,7 +599,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
 
         calculatePages();
         
-    }, [toGenerate, personalInfo, experience, education, projects, skills]);
+    }, [toGenerate, personalInfo, experience, education, projects, skills, references]);
 
     const handlePrevious = () => {
         setCurrentPage(prev => Math.max(1, prev - 1));
@@ -581,10 +622,12 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 education={pages[currentPage - 1]?.education || []} 
                 projects={pages[currentPage - 1]?.projects || []} 
                 skills={pages[currentPage - 1]?.skills || []}
+                references={pages[currentPage - 1]?.references || []}
                 showExperienceTitle={pages[currentPage - 1]?.showExperienceTitle}
                 showEducationTitle={pages[currentPage - 1]?.showEducationTitle}
                 showProjectsTitle={pages[currentPage - 1]?.showProjectsTitle}
                 showSkillsTitle={pages[currentPage - 1]?.showSkillsTitle}
+                showReferencesTitle={pages[currentPage - 1]?.showReferencesTitle}
             />
             {!toGenerate && pages.length > 1 && (
                 <div className="flex items-center justify-center gap-3 fixed bottom-3">
@@ -637,17 +680,19 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
     );
 }
 
-function CvPage({ toGenerate, personalInfo, experience, education, projects, skills, showExperienceTitle, showEducationTitle, showProjectsTitle, showSkillsTitle }: { 
+function CvPage({ toGenerate, personalInfo, experience, education, projects, skills, references, showExperienceTitle, showEducationTitle, showProjectsTitle, showSkillsTitle, showReferencesTitle }: { 
     toGenerate?: boolean, 
     personalInfo: PersonalInfo, 
     experience: Experience[], 
     education: Education[], 
     projects: Project[], 
     skills: Skill[],
+    references: Reference[],
     showExperienceTitle?: boolean,
     showEducationTitle?: boolean,
     showProjectsTitle?: boolean,
-    showSkillsTitle?: boolean
+    showSkillsTitle?: boolean,
+    showReferencesTitle?: boolean
 }) {
 
     const { name, email, phone, links, jobTitle } = personalInfo;
@@ -788,6 +833,40 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                 <li key={skill.id}>{skill.description}</li>
                             ))}
                         </ul>
+                    </section>
+                )}
+
+                {/* References */}
+                {(references.length > 0 || showReferencesTitle) && (
+                    <section>
+                        <SectionTitle title={showReferencesTitle || toGenerate ? "References" : ""} />
+                        <SectionListContainer>
+                            {references.map((ref) => {
+                                const isContinuation = (ref as ContinuationReference).isContinuation;
+                                return isAnyFieldFilled(ref) && (
+                                <div key={ref.id}>
+                                        {/* Only show header if NOT a continuation */}
+                                        {!isContinuation && (
+                                            <>
+                                    <div className="flex justify-between">
+                                        <div>
+                                            <span className="font-bold">{ref.name}</span>
+                                            {ref.company && <span> | {ref.company}</span>}
+                                        </div>
+                                    </div>
+                                    <div className="mt-0.5"><a className="text-blue-600 underline" href={`mailto:${ref.email}`}>{ref.email}</a> {ref.phone ? ` | ${ref.phone}` : ''}</div>
+                                            </>
+                                        )}
+                                        {/* Always show description */}
+                                    {ref.description && (
+                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{ref.description}</ReactMarkdown>
+                                        </div>
+                                    )}
+                                </div>
+                                );
+                            })}
+                        </SectionListContainer>
                     </section>
                 )}
             </div>

@@ -27,6 +27,14 @@ export type Skill = {
     id: string;
     description?: string;
 }
+export type Reference = {
+    id: string;
+    name?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+    description?: string;
+}
 export type PersonalInfo = {
     name?: string;
     email?: string;

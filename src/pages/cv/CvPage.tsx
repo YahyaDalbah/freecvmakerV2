@@ -3,7 +3,7 @@ import GridInputsContainer from "../../ui/cv-editing-section/GridInputsContainer
 import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
 import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
-import type { Education, Experience, Project, Skill } from "../../apis/types";
+import type { Education, Experience, Project, Skill, Reference } from "../../apis/types";
 import { useState } from "react";
 import Button from "../../ui/cv-editing-section/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -350,6 +350,16 @@ export default function CvPage() {
         }
     ]);
     
+    const [references, setReferences] = useState<Reference[]>([
+        {
+            id: '1',
+            name: 'Jane Smith',
+            company: 'Tech Solutions Inc.',
+            email: 'jane.smith@techsolutions.com',
+            phone: '+1 (555) 987-6543',
+            description: 'Former manager at Tech Solutions Inc.'
+        }
+    ]);
     
 
     const updatePersonalInfo = (field: keyof typeof personalInfo, value: string | string[]) => {
@@ -388,6 +398,12 @@ export default function CvPage() {
         ));
     };
 
+    const updateReference = (id: string, field: keyof Reference, value: string) => {
+        setReferences(prev => prev.map(item =>
+            item.id === id ? { ...item, [field]: value } : item
+        ));
+    };
+
     function addExperience() {
         setExperience([...experience, { id: generateId(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', city: '', github: '' }]);
     }
@@ -412,6 +428,12 @@ export default function CvPage() {
     function deleteProject(id: string) {
         setProjects(projects.filter(item => item.id !== id));
     }
+    function addReference() {
+        setReferences([...references, { id: generateId(), name: '', company: '', email: '', phone: '', description: '' }]);
+    }
+    function deleteReference(id: string) {
+        setReferences(references.filter(item => item.id !== id));
+    }
     
 
     async function handleGeneratePdf() {
@@ -421,6 +443,7 @@ export default function CvPage() {
             education,
             projects,
             skills,
+            references,
         };
         const res = await fetch("http://localhost:3001/api/generate-cv", {
             method: "POST",
@@ -524,10 +547,28 @@ export default function CvPage() {
                         <Button variant="link" onClick={addSkill}><FontAwesomeIcon icon={faPlus} /> Add Skill</Button>
                     </div>
                 </div>
+                {/* References */}
+                <div>
+                    <SectionTitle title="References" />
+                    <div className="flex flex-col gap-4">
+                        {references.map((reference) => (
+                            <DropdownMenu title={reference.name} onDelete={() => deleteReference(reference.id)} key={reference.id}>
+                                <GridInputsContainer>
+                                    <TextInput label="Name" name="name" type="text" placeholder="Enter name" value={reference.name} onChange={(e) => updateReference(reference.id, 'name', e.target.value)} />
+                                    <TextInput label="Company" name="company" type="text" placeholder="Enter company" value={reference.company} onChange={(e) => updateReference(reference.id, 'company', e.target.value)} />
+                                    <TextInput label="Email" name="email" type="email" placeholder="Enter email" value={reference.email} onChange={(e) => updateReference(reference.id, 'email', e.target.value)} />
+                                    <TextInput label="Phone" name="phone" type="tel" placeholder="Enter phone" value={reference.phone} onChange={(e) => updateReference(reference.id, 'phone', e.target.value)} />
+                                    <TextAreaInput span={true} label="Description" name="description" value={reference.description} onChange={(value) => updateReference(reference.id, 'description', value)} />
+                                </GridInputsContainer>
+                            </DropdownMenu>
+                        ))}
+                        <Button variant="link" onClick={addReference}><FontAwesomeIcon icon={faPlus} /> Add Reference</Button>
+                    </div>
+                </div>
             </div>
             <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>
                 <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-4 cursor-pointer fixed top-2 z-10">Generate PDF</button>
-                <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} skills={skills} />
+                <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} skills={skills} references={references} />
             </div>
             <button onClick={() => setShowCvOnSmall(prev => !prev)} className="xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
                 <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />
