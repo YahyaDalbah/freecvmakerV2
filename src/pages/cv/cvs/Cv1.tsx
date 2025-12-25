@@ -380,7 +380,7 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
                 const maxPageHeight = 320 * 3.7795275591 - 32; // Convert mm to px, subtract padding
                 const sectionSpacing = 20; // 1.25rem = 20px spacing between sections
                 const innerSectionSpacing = 16;
-                const sectionTitleHeight = 26.4; // Approximate height for section title
+                const sectionTitleHeight = 27.4; // Approximate height for section title
 
                 let newPages: PageContent[] = [];
                 let currentHeight = 0;
