@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import SectionTitle from "../../../ui/cv-sections/SectionTitle";
 import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -330,7 +330,7 @@ function findDescriptionSplitPoint(
     return lastFittingIndex > 0 && lastFittingIndex < tokens.length - 1 ? lastFittingIndex : null;
 }
 
-export default function Cv1({ toGenerate, personalInfo, experience, education, projects, skills, references }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[], references: Reference[] }) {
+function Cv1({ toGenerate, personalInfo, experience, education, projects, skills, references }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[], references: Reference[] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState<PageContent[]>([
         { personalInfo, experience, education, projects, skills, references }
@@ -344,6 +344,8 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
             return;
         }
 
+        // Debounce the expensive calculation
+        const timeoutId = setTimeout(() => {
         const calculatePages = async () => {
             // Filter out empty items
             const validExperience = experience.filter(isAnyFieldFilled);
@@ -598,7 +600,9 @@ export default function Cv1({ toGenerate, personalInfo, experience, education, p
         };
 
         calculatePages();
+        }, 300); // Debounce by 300ms
         
+        return () => clearTimeout(timeoutId);
     }, [toGenerate, personalInfo, experience, education, projects, skills, references]);
 
     const handlePrevious = () => {
@@ -875,3 +879,5 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
 
     );
 }
+
+export default memo(Cv1);

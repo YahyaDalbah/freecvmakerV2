@@ -4,12 +4,13 @@ import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
 import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
 import type { Education, Experience, Project, Skill, Reference } from "../../apis/types";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Button from "../../ui/cv-editing-section/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-icons";
 import Cv1 from "./cvs/Cv1";
 import { saveAs } from "file-saver";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 const generateId = (): string => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
@@ -17,6 +18,7 @@ const generateId = (): string => {
 
 export default function CvPage() {
     const [showCvOnSmall, setShowCvOnSmall] = useState(true);
+    const isLargeScreen = useMediaQuery('(min-width: 1280px)'); // xl breakpoint
     const [personalInfo, setPersonalInfo] = useState({
         name: 'John Doe',
         email: 'johndoe@example.com',
@@ -33,7 +35,7 @@ export default function CvPage() {
             company: 'Tech Solutions Inc.',
             startDate: 'Jan 2021',
             endDate: 'Present',
-            description: '- 1\n- 2\n- 3\n- 4\n- 5\n- 6\n- 7\n- 8\n- 9\n- 10\n- 11\n- 12\n- 13\n- 14\n- 15\n- 16\n- 17\n- 18\n- 19\n- 20\n- 21\n- 22\n- 23\n- 24\n- 25\n- 26\n- 27\n- 28\n- 29\n- 30\n- 31\n- 32\n- 33\n- 34\n- 35\n- 36\n- 37\n- 38\n- 39\n- 40\n- 41\n- 42\n- 43\n- 44\n- 45\n- 46\n- 47\n- 48\n- 49\n- 50\n- 51\n- 52\n- 53\n- 54\n- 55\n- 56\n- 57\n- 58\n- 59\n- 60\n- 61\n- 62\n- 63\n- 64\n- 65\n- 66\n- 67\n- 68\n- 69\n- 70\n- 71\n- 72\n- 73\n- 74\n- 75\n- 76\n- 77\n- 78\n- 79\n- 80\n- 81\n- 82\n- 83\n- 84\n- 85\n- 86\n- 87\n- 88\n- 89\n- 90\n- 91\n- 92\n- 93\n- 94\n- 95\n- 96\n- 97\n- 98\n- 99\n- 100',
+            description: '- Developed responsive web applications using React and TypeScript\n- Collaborated with design team to implement UI/UX improvements\n- Optimized application performance, reducing load time by 40%',
             city: 'New York, USA',
             github: 'https://github.com/johndoe/frontend-projects'
         },
@@ -55,283 +57,19 @@ export default function CvPage() {
     const [skills, setSkills] = useState<Skill[]>([
         {
             id: '1',
-            description: '1'
+            description: 'JavaScript, TypeScript, React, Next.js'
         },
         {
             id: '2',
-            description: '2'
+            description: 'HTML5, CSS3, Tailwind CSS, Sass'
         },
         {
             id: '3',
-            description: '3'
+            description: 'Node.js, Express, MongoDB'
         },
         {
             id: '4',
-            description: '4'
-        },
-        {
-            id: '5',
-            description: '5'
-        },
-        {
-            id: '6',
-            description: '6'
-        },
-        {
-            id: '7',
-            description: '7'
-        },
-        {
-            id: '8',
-            description: '8'
-        },
-        {
-            id: '9',
-            description: '9'
-        },
-        {
-            id: '10',
-            description: '10'
-        },
-        {
-            id: '11',
-            description: '11'
-        },
-        {
-            id: '12',
-            description: '12'
-        },
-        {
-            id: '13',
-            description: '13'
-        },
-        {
-            id: '14',
-            description: '14'
-        },
-        {
-            id: '15',
-            description: '15'
-        },
-        {
-            id: '16',
-            description: '16'
-        },
-        {
-            id: '17',
-            description: '17'
-        },
-        {
-            id: '18',
-            description: '18'
-        },
-        {
-            id: '19',
-            description: '19'
-        },
-        {
-            id: '20',
-            description: '20'
-        },
-        {
-            id: '21',
-            description: '21'
-        },
-        {
-            id: '22',
-            description: '22'
-        },
-        {
-            id: '23',
-            description: '23'
-        },
-        {
-            id: '24',
-            description: '24'
-        },
-        {
-            id: '25',
-            description: '25'
-        },
-        {
-            id: '26',
-            description: '26'
-        },
-        {
-            id: '27',
-            description: '27'
-        },
-        {
-            id: '28',
-            description: '28'
-        },
-        {
-            id: '29',
-            description: '29'
-        },
-        {
-            id: '30',
-            description: '30'
-        },
-        {
-            id: '31',
-            description: '31'
-        },
-        {
-            id: '32',
-            description: '32'
-        },
-        {
-            id: '33',
-            description: '33'
-        },
-        {
-            id: '34',
-            description: '34'
-        },
-        {
-            id: '35',
-            description: '35'
-        },
-        {
-            id: '36',
-            description: '36'
-        },
-        {
-            id: '37',
-            description: '37'
-        },
-        {
-            id: '38',
-            description: '38'
-        },
-        {
-            id: '39',
-            description: '39'
-        },
-        {
-            id: '40',
-            description: '40'
-        },
-        {
-            id: '41',
-            description: '41'
-        },
-        {
-            id: '42',
-            description: '42'
-        },
-        {
-            id: '43',
-            description: '43'
-        },
-        {
-            id: '44',
-            description: '44'
-        },
-        {
-            id: '45',
-            description: '45'
-        },
-        {
-            id: '46',
-            description: '46'
-        },
-        {
-            id: '47',
-            description: '47'
-        },
-        {
-            id: '48',
-            description: '48'
-        },
-        {
-            id: '49',
-            description: '49'
-        },
-        {
-            id: '50',
-            description: '50'
-        },
-        {
-            id: '51',
-            description: '51'
-        },
-        {
-            id: '52',
-            description: '52'
-        },
-        {
-            id: '53',
-            description: '53'
-        },
-        {
-            id: '54',
-            description: '54'
-        },
-        {
-            id: '55',
-            description: '55'
-        },
-        {
-            id: '56',
-            description: '56'
-        },
-        {
-            id: '57',
-            description: '57'
-        },
-        {
-            id: '58',
-            description: '58'
-        },
-        {
-            id: '59',
-            description: '59'
-        },
-        {
-            id: '60',
-            description: '60'
-        },
-        {
-            id: '61',
-            description: '61'
-        },
-        {
-            id: '62',
-            description: '62'
-        },
-        {
-            id: '63',
-            description: '63'
-        },
-        {
-            id: '64',
-            description: '64'
-        },
-        {
-            id: '65',
-            description: '65'
-        },
-        {
-            id: '66',
-            description: '66'
-        },
-        {
-            id: '67',
-            description: '67'
-        },
-        {
-            id: '68',
-            description: '68'
-        },
-        {
-            id: '69',
-            description: '69'
-        },
-        {
-            id: '70',
-            description: '70'
+            description: 'Git, GitHub, CI/CD'
         }
     ]);
     
@@ -362,79 +100,97 @@ export default function CvPage() {
     ]);
     
 
-    const updatePersonalInfo = (field: keyof typeof personalInfo, value: string | string[]) => {
+    const updatePersonalInfo = useCallback((field: keyof typeof personalInfo, value: string | string[]) => {
         setPersonalInfo(prev => ({ ...prev, [field]: value }));
-    };
+    }, []);
 
-    const updateLink = (index: number, value: string) => {
+    const updateLink = useCallback((index: number, value: string) => {
         setPersonalInfo(prev => {
             const newLinks = [...(prev.links || ['', '', ''])];
             newLinks[index] = value;
             return { ...prev, links: newLinks };
         });
-    };
+    }, []);
 
-    const updateExperience = (id: string, field: keyof Experience, value: string) => {
+    const updateExperience = useCallback((id: string, field: keyof Experience, value: string) => {
         setExperience(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
-    };
+    }, []);
 
-    const updateEducation = (id: string, field: keyof Education, value: string) => {
+    const updateEducation = useCallback((id: string, field: keyof Education, value: string) => {
         setEducation(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
-    };
+    }, []);
 
-    const updateSkills = (id: string, value: string) => {
+    const updateSkills = useCallback((id: string, value: string) => {
         setSkills(prev => prev.map(item =>
             item.id === id ? { ...item, description: value } : item
         ));
-    };
+    }, []);
 
-    const updateProject = (id: string, field: keyof Project, value: string | string[]) => {
+    const updateProject = useCallback((id: string, field: keyof Project, value: string | string[]) => {
         setProjects(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
-    };
+    }, []);
 
-    const updateReference = (id: string, field: keyof Reference, value: string) => {
+    const updateReference = useCallback((id: string, field: keyof Reference, value: string) => {
         setReferences(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
-    };
+    }, []);
 
-    function addExperience() {
-        setExperience([...experience, { id: generateId(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', city: '', github: '' }]);
-    }
-    function deleteExperience(id: string) {
-        setExperience(experience.filter(item => item.id !== id));
-    }
-    function addEducation() {
-        setEducation([...education, { id: generateId(), school: '', degree: '', fieldOfStudy: '', startDate: '', endDate: '', description: '' }]);
-    }
-    function deleteEducation(id: string) {
-        setEducation(education.filter(item => item.id !== id));
-    }
-    function addSkill() {
-        setSkills([...skills, { id: generateId(), description: '' }]);
-    }
-    function deleteSkill(id: string) {
-        setSkills(skills.filter(item => item.id !== id));
-    }
-    function addProject() {
-        setProjects([...projects, { id: generateId(), name: '', description: '', technologies: [] }]);
-    }
-    function deleteProject(id: string) {
-        setProjects(projects.filter(item => item.id !== id));
-    }
-    function addReference() {
-        setReferences([...references, { id: generateId(), name: '', company: '', email: '', phone: '', description: '' }]);
-    }
-    function deleteReference(id: string) {
-        setReferences(references.filter(item => item.id !== id));
-    }
+    const addExperience = useCallback(() => {
+        setExperience(prev => [...prev, { id: generateId(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', city: '', github: '' }]);
+    }, []);
     
+    const deleteExperience = useCallback((id: string) => {
+        setExperience(prev => prev.filter(item => item.id !== id));
+    }, []);
+    
+    const addEducation = useCallback(() => {
+        setEducation(prev => [...prev, { id: generateId(), school: '', degree: '', fieldOfStudy: '', startDate: '', endDate: '', description: '' }]);
+    }, []);
+    
+    const deleteEducation = useCallback((id: string) => {
+        setEducation(prev => prev.filter(item => item.id !== id));
+    }, []);
+    
+    const addSkill = useCallback(() => {
+        setSkills(prev => [...prev, { id: generateId(), description: '' }]);
+    }, []);
+    
+    const deleteSkill = useCallback((id: string) => {
+        setSkills(prev => prev.filter(item => item.id !== id));
+    }, []);
+    
+    const addProject = useCallback(() => {
+        setProjects(prev => [...prev, { id: generateId(), name: '', description: '', technologies: [] }]);
+    }, []);
+    
+    const deleteProject = useCallback((id: string) => {
+        setProjects(prev => prev.filter(item => item.id !== id));
+    }, []);
+    
+    const addReference = useCallback(() => {
+        setReferences(prev => [...prev, { id: generateId(), name: '', company: '', email: '', phone: '', description: '' }]);
+    }, []);
+    
+    const deleteReference = useCallback((id: string) => {
+        setReferences(prev => prev.filter(item => item.id !== id));
+    }, []);
+    
+    // Memoize CV props to prevent unnecessary re-renders
+    const cvProps = useMemo(() => ({
+        personalInfo,
+        experience,
+        education,
+        projects,
+        skills,
+        references
+    }), [personalInfo, experience, education, projects, skills, references]);
 
     async function handleGeneratePdf() {
         const payload = {
@@ -568,7 +324,8 @@ export default function CvPage() {
             </div>
             <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>
                 <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-4 cursor-pointer fixed top-2 z-10">Generate PDF</button>
-                <Cv1 personalInfo={personalInfo} experience={experience} education={education} projects={projects} skills={skills} references={references} />
+                {/* Only render CV when visible (on large screens or when showCvOnSmall is true) */}
+                {(isLargeScreen || showCvOnSmall) && <Cv1 {...cvProps} />}
             </div>
             <button onClick={() => setShowCvOnSmall(prev => !prev)} className="xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
                 <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />

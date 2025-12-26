@@ -1,8 +1,8 @@
 import { faChevronDown, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useState, memo } from "react";
 
-export default function DropdownMenu({ children, onDelete, title }: { children: React.ReactNode, onDelete: () => void, title: string | undefined }) {
+function DropdownMenu({ children, onDelete, title }: { children: React.ReactNode, onDelete: () => void, title: string | undefined }) {
     const [isHovered, setIsHovered] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -37,3 +37,5 @@ export default function DropdownMenu({ children, onDelete, title }: { children: 
         </div>
     )
 }
+
+export default memo(DropdownMenu);
