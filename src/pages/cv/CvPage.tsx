@@ -11,12 +11,14 @@ import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-
 import Cv1 from "./cvs/Cv1";
 import { saveAs } from "file-saver";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { AutoSaveProvider, useAutoSave } from "../../contexts/AutoSaveContext";
+import AutoSaveIndicator from "../../ui/AutoSaveIndicator";
 
 const generateId = (): string => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
-export default function CvPage() {
+function CvPageContent() {
     const [showCvOnSmall, setShowCvOnSmall] = useState(true);
     const isLargeScreen = useMediaQuery('(min-width: 1280px)'); // xl breakpoint
     const [personalInfo, setPersonalInfo] = useState({
@@ -330,6 +332,15 @@ export default function CvPage() {
             <button onClick={() => setShowCvOnSmall(prev => !prev)} className="xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
                 <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />
             </button>
+            <AutoSaveIndicator status={useAutoSave().status} />
         </div>
     )
+}
+
+export default function CvPage() {
+    return (
+        <AutoSaveProvider>
+            <CvPageContent />
+        </AutoSaveProvider>
+    );
 }
