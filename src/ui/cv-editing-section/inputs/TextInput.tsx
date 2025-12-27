@@ -1,8 +1,10 @@
 import { memo, useState, useEffect, useCallback } from "react";
 import InputLabel from "./InputLabel";
+import { useAutoSave } from "../../../contexts/AutoSaveContext";
 
 function TextInput({ label, name, type, placeholder, value, onChange }: { label?: string, name: string, type: string, placeholder: string, value: string | undefined, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
   const [localValue, setLocalValue] = useState(value ?? "");
+  const { startSaving, finishSaving } = useAutoSave();
 
   // Sync local value when prop changes from outside
   useEffect(() => {
@@ -11,6 +13,11 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
 
   // Debounced onChange to parent
   useEffect(() => {
+    // If local value is different, we're in "saving" state
+    if (localValue !== value) {
+      startSaving();
+    }
+
     const timeoutId = setTimeout(() => {
       if (localValue !== value) {
         // Create a synthetic event for compatibility
@@ -18,11 +25,12 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
           target: { value: localValue }
         } as React.ChangeEvent<HTMLInputElement>;
         onChange(syntheticEvent);
+        finishSaving();
       }
-    }, 150); // 150ms debounce for text inputs
+    }, 1000); // 1000ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [localValue, onChange, value]);
+  }, [localValue, onChange, value, startSaving, finishSaving]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalValue(e.target.value);

@@ -2,9 +2,11 @@ import { memo, useState, useEffect, useCallback } from "react";
 import InputLabel from "./InputLabel";
 import MDEditor from "@uiw/react-md-editor";
 import remarkGfm from "remark-gfm";
+import { useAutoSave } from "../../../contexts/AutoSaveContext";
 
 function TextAreaInput({ span = false, label, name, value = "", onChange }: { span?: boolean, label?: string, name: string, value: string | undefined, onChange: (value: string) => void }) {
   const [localValue, setLocalValue] = useState(value ?? "");
+  const { startSaving, finishSaving } = useAutoSave();
 
   // Sync local value when prop changes from outside
   useEffect(() => {
@@ -13,14 +15,20 @@ function TextAreaInput({ span = false, label, name, value = "", onChange }: { sp
 
   // Debounced onChange to parent
   useEffect(() => {
+    // If local value is different, we're in "saving" state
+    if (localValue !== value) {
+      startSaving();
+    }
+
     const timeoutId = setTimeout(() => {
       if (localValue !== value) {
         onChange(localValue);
+        finishSaving();
       }
-    }, 300); // 300ms debounce
+    }, 1000); // 1000ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [localValue, onChange, value]);
+  }, [localValue, onChange, value, startSaving, finishSaving]);
 
   const handleChange = useCallback((val: string | undefined) => {
     setLocalValue(val ?? "");
