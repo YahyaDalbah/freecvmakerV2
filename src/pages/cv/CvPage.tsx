@@ -5,7 +5,7 @@ import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
 import type { Education, Experience, Project, Skill, Reference } from "../../apis/types";
 import { useState, useCallback, useMemo } from "react";
-import Button from "../../ui/cv-editing-section/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-icons";
 import Cv1 from "./cvs/Cv1";
@@ -325,7 +325,11 @@ function CvPageContent() {
                 </div>
             </div>
             <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>
-                <button onClick={handleGeneratePdf} className="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 rounded-md self-end mr-4 cursor-pointer fixed top-2 z-10">Generate PDF</button>
+                <div className="fixed top-2 right-4 z-10">
+                    <Button variant="solid" color="blue" onClick={handleGeneratePdf} shadow={false}>
+                        Generate PDF
+                    </Button>
+                </div>
                 {/* Only render CV when visible (on large screens or when showCvOnSmall is true) */}
                 {(isLargeScreen || showCvOnSmall) && <Cv1 {...cvProps} />}
             </div>
