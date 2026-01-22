@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useCallback } from "react";
 import InputLabel from "./InputLabel";
 import { useAutoSave } from "../../../contexts/AutoSaveContext";
+import { isAuthenticated } from "../../../apis/cvApi";
 
 function TextInput({ label, name, type, placeholder, value, onChange }: { label?: string, name: string, type: string, placeholder: string, value: string | undefined, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
   const [localValue, setLocalValue] = useState(value ?? "");
@@ -14,7 +15,7 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
   // Debounced onChange to parent
   useEffect(() => {
     // If local value is different, we're in "saving" state
-    if (localValue !== value) {
+    if (localValue !== value && isAuthenticated()) {
       startSaving();
     }
 
@@ -25,7 +26,6 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
           target: { value: localValue }
         } as React.ChangeEvent<HTMLInputElement>;
         onChange(syntheticEvent);
-        finishSaving();
       }
     }, 1000); // 1000ms debounce
 

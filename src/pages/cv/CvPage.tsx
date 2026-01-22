@@ -4,7 +4,7 @@ import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
 import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
 import type { Education, Experience, Project, Skill, Reference } from "../../apis/types";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import Button from "../../ui/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines } from "@fortawesome/free-solid-svg-icons";
@@ -13,93 +13,119 @@ import { saveAs } from "file-saver";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { AutoSaveProvider, useAutoSave } from "../../contexts/AutoSaveContext";
 import AutoSaveIndicator from "../../ui/AutoSaveIndicator";
+import { getCvData, updateCvData, isAuthenticated, type CvData } from "../../apis/cvApi";
 
 const generateId = (): string => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
 function CvPageContent() {
+    const { status: autoSaveStatus, startSaving, finishSaving } = useAutoSave();
     const [showCvOnSmall, setShowCvOnSmall] = useState(true);
     const isLargeScreen = useMediaQuery('(min-width: 1280px)'); // xl breakpoint
+    const [isLoading, setIsLoading] = useState(true);
     const [personalInfo, setPersonalInfo] = useState({
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        phone: '+1 (555) 123-4567',
-        jobTitle: 'Full Stack Developer',
-        city: 'New York, USA',
-        links: ['https://github.com/johndoe', 'https://linkedin.com/in/johndoe', '']
+        name: '',
+        email: '',
+        phone: '',
+        jobTitle: '',
+        city: '',
+        links: ['', '', '']
     });
     
-    const [experience, setExperience] = useState<Experience[]>([
-        {
-            id: '1',
-            jobTitle: 'Frontend Developer',
-            company: 'Tech Solutions Inc.',
-            startDate: 'Jan 2021',
-            endDate: 'Present',
-            description: '- Developed responsive web applications using React and TypeScript\n- Collaborated with design team to implement UI/UX improvements\n- Optimized application performance, reducing load time by 40%',
-            city: 'New York, USA',
-            github: 'https://github.com/johndoe/frontend-projects'
-        },
-        
-    ]);
-    
-    const [education, setEducation] = useState<Education[]>([
-        {
-            id: '1',
-            school: 'MIT',
-            degree: 'Bachelor’s Degree',
-            fieldOfStudy: 'Computer Science',
-            startDate: '2015',
-            endDate: '2019',
-            description: 'Focused on software engineering, algorithms, and web development.'
+    const [experience, setExperience] = useState<Experience[]>([]);
+    const [education, setEducation] = useState<Education[]>([]);
+    const [skills, setSkills] = useState<Skill[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [references, setReferences] = useState<Reference[]>([]);
+
+    const dataLoadedRef = useRef(false);
+    const saveTimeoutRef = useRef<number | null>(null);
+    const isFirstLoadRef = useRef(true);
+
+    useEffect(() => {
+        const loadCvData = async () => {
+            if (!isAuthenticated()) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const data = await getCvData();
+                setPersonalInfo({
+                    name: data.personalInfo?.name || '',
+                    email: data.personalInfo?.email || '',
+                    phone: data.personalInfo?.phone || '',
+                    jobTitle: data.personalInfo?.jobTitle || '',
+                    city: data.personalInfo?.city || '',
+                    links: data.personalInfo?.links || ['', '', '']
+                });
+                setExperience(data.experience || []);
+                setEducation(data.education || []);
+                setSkills(data.skills || []);
+                setProjects(data.projects || []);
+                setReferences(data.references || []);
+            } catch (error) {
+                console.error('Failed to load CV data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadCvData();
+    }, []);
+
+    useEffect(() => {
+        if (!isLoading && isFirstLoadRef.current) {
+            isFirstLoadRef.current = false;
+            setTimeout(() => {
+                dataLoadedRef.current = true;
+            }, 1000);
         }
-    ]);
-    
-    const [skills, setSkills] = useState<Skill[]>([
-        {
-            id: '1',
-            description: 'JavaScript, TypeScript, React, Next.js'
-        },
-        {
-            id: '2',
-            description: 'HTML5, CSS3, Tailwind CSS, Sass'
-        },
-        {
-            id: '3',
-            description: 'Node.js, Express, MongoDB'
-        },
-        {
-            id: '4',
-            description: 'Git, GitHub, CI/CD'
+    }, [isLoading]);
+
+    const saveCvData = useCallback(async () => {
+        if (!isAuthenticated()) {
+            return;
         }
-    ]);
-    
-    const [projects, setProjects] = useState<Project[]>([
-        {
-            id: '1',
-            name: 'Portfolio Website',
-            description: 'Personal portfolio to showcase projects and skills.',
-            technologies: ['React', 'Tailwind CSS', 'TypeScript']
-        },
-        {
-            id: '2',
-            name: 'E-commerce Store',
-            description: '',
-            technologies: ['Next.js', 'MongoDB', 'Stripe']
+
+        try {
+            startSaving();
+            const cvData: CvData = {
+                personalInfo,
+                experience,
+                education,
+                skills,
+                projects,
+                references
+            };
+            await updateCvData(cvData);
+            finishSaving();
+        } catch (error) {
+            console.error('Failed to save CV data:', error);
+            finishSaving(true);
         }
-    ]);
-    
-    const [references, setReferences] = useState<Reference[]>([
-        {
-            id: '1',
-            name: 'Jane Smith',
-            company: 'Tech Solutions Inc.',
-            email: 'jane.smith@techsolutions.com',
-            phone: '+1 (555) 987-6543',
-            description: 'Former manager at Tech Solutions Inc.'
+    }, [personalInfo, experience, education, skills, projects, references, startSaving, finishSaving]);
+
+    useEffect(() => {
+        if (!dataLoadedRef.current) {
+            return;
         }
-    ]);
+
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+
+        saveTimeoutRef.current = setTimeout(() => {
+            saveCvData();
+        }, 900);
+
+        return () => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+            }
+        };
+    }, [personalInfo, experience, education, skills, projects, references]);
     
 
     const updatePersonalInfo = useCallback((field: keyof typeof personalInfo, value: string | string[]) => {
@@ -216,6 +242,15 @@ function CvPageContent() {
         // @ts-ignore - file-saver type can be missing
         saveAs(blob, "cv.pdf");
     }
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="text-xl">Loading CV data...</div>
+            </div>
+        );
+    }
+
     return (
         <div className="relative grid grid-cols-1 xl:grid-cols-2">
             <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12`}>
@@ -336,7 +371,7 @@ function CvPageContent() {
             <button onClick={() => setShowCvOnSmall(prev => !prev)} className="xl:hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50 cursor-pointer" aria-label={showCvOnSmall ? 'Open editor' : 'Open CV preview'}>
                 <FontAwesomeIcon icon={showCvOnSmall ? faPenToSquare : faFileLines} />
             </button>
-            <AutoSaveIndicator status={useAutoSave().status} />
+            <AutoSaveIndicator status={autoSaveStatus} />
         </div>
     )
 }
