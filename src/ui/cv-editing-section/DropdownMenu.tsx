@@ -23,10 +23,10 @@ function DropdownMenu({ children, onDelete, title }: { children: React.ReactNode
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={toggleDropdown}>
-                <h3 className={`${isHovered ? 'text-blue-400' : 'text-gray-700'}`}>{title || '(Untitled)'}</h3>
+                <h3 className={`${isHovered ? 'text-blue-500' : 'text-gray-800'}`}>{title || '(Untitled)'}</h3>
                 <div className="flex items-center gap-4">
-                    <FontAwesomeIcon onClick={(e) => handleDelete(e)} onMouseEnter={() => setIsHovered(false)} onMouseLeave={() => setIsHovered(true)} className="text-gray-400 hover:text-red-500 cursor-pointer" icon={faTrash} />
-                    <FontAwesomeIcon className={`${isHovered ? 'text-blue-400' : 'text-gray-400'} cursor-pointer`} icon={isOpen ? faChevronUp : faChevronDown} />
+                    <FontAwesomeIcon onClick={(e) => handleDelete(e)} onMouseEnter={() => setIsHovered(false)} onMouseLeave={() => setIsHovered(true)} className="text-gray-700 hover:text-red-500 cursor-pointer" icon={faTrash} />
+                    <FontAwesomeIcon className={`${isHovered ? 'text-blue-500' : 'text-gray-700'} cursor-pointer`} icon={isOpen ? faChevronUp : faChevronDown} />
                 </div>
             </div>
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 mt-4' : 'max-h-0'}`}>

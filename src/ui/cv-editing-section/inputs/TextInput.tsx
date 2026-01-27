@@ -38,8 +38,16 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
 
   return (
     <div className="flex flex-col gap-2">
-        <InputLabel label={label} name={name} />    
-        <input id={name} type={type} name={name} placeholder={placeholder} className="rounded-md p-2 bg-gray-50 border border-gray-300 outline-0" value={localValue} onChange={handleChange} />
+        <InputLabel label={label} />    
+        <input 
+          id={name} 
+          type={type} 
+          name={name} 
+          placeholder={placeholder} 
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white" 
+          value={localValue} 
+          onChange={handleChange} 
+        />
     </div>
   )
 }

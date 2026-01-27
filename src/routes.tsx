@@ -1,39 +1,41 @@
 import { type RouteObject } from "react-router-dom";
 import CvPage from "./pages/cv/CvPage";
 import PrintCvPage from "./pages/cv/PrintCvPage";
-import LoginPage from "./pages/cv/loginPage";
-import SignupPage from "./pages/cv/SignupPage";
+import LoginPage from "./pages/auth/LoginPage";
+import SignupPage from "./pages/auth/SignupPage";
+import Logout from "./pages/auth/Logout";
 import NotFoundPage from "./pages/NotFoundPage";
+import Layout from "./components/Layout";
 
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: (
-      <CvPage />
-    ),
-  },
-  {
-    path: "/print",
-    element: (
-      <PrintCvPage />
-    ),
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <CvPage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
+      }
+    ]
   },
   {
     path: "/login",
-    element: (
-      <LoginPage />
-    ),
+    element: <LoginPage />,
   },
   {
     path: "/signup",
-    element: (
-      <SignupPage />
-    ),
+    element: <SignupPage />,
   },
   {
-    path: "*",
-    element: (
-      <NotFoundPage />
-    ),
+    path: "/logout",
+    element: <Logout />,
+  },
+  {
+    path: "/print",
+    element: <PrintCvPage />,
   }
 ]; 

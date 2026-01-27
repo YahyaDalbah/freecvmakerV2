@@ -36,7 +36,7 @@ function TextAreaInput({ span = false, label, name, value = "", onChange }: { sp
 
   return (
     <div className={`flex flex-col gap-2 ${span ? `col-span-2` : ""}`}>
-      <InputLabel label={label} name={name} />
+      <InputLabel label={label} />
       {/* Markdown editor with toolbar */}
       <div data-color-mode="light">
         <MDEditor

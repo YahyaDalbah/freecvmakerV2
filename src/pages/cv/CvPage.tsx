@@ -253,7 +253,7 @@ function CvPageContent() {
 
     return (
         <div className="relative grid grid-cols-1 xl:grid-cols-2">
-            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12`}>
+            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12 bg-gray-50 pt-20`}>
                 {/* Personal Info */}
                 <div>
                     <SectionTitle title="Personal Info" />
@@ -360,7 +360,7 @@ function CvPageContent() {
                 </div>
             </div>
             <div className={`bg-gray-700 ${showCvOnSmall ? 'flex' : 'hidden'} w-dvw h-dvh xl:w-auto xl:h-auto xl:flex flex-col items-center`}>
-                <div className="fixed top-2 right-4 z-10">
+                <div className="fixed top-20 right-4 z-10">
                     <Button variant="solid" color="blue" onClick={handleGeneratePdf} shadow={false}>
                         Generate PDF
                     </Button>

@@ -379,7 +379,7 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
 
                 // Available height per page (accounting for padding and margins)
                 // inner-cv-constraints-web height minus spacing
-                const maxPageHeight = 320 * 3.7795275591 - 32; // Convert mm to px, subtract padding
+                const maxPageHeight = 320 * 3.7795275591 - 10; // Convert mm to px, subtract padding
                 const sectionSpacing = 20; // 1.25rem = 20px spacing between sections
                 const innerSectionSpacing = 16;
                 const sectionTitleHeight = 27.4; // Approximate height for section title
@@ -702,7 +702,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
     const { name, email, phone, links, jobTitle } = personalInfo;
     
     return (
-        <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-71 origin-top fixed top-10"}`}>
+        <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-71 origin-bottom fixed bottom-10"}`}>
             <div className={`inner-cv-constraints-web`}>
             {/* Header */}
             <header className="text-center mb-4">
