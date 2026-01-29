@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import SectionTitle from "../../../ui/cv-sections/SectionTitle";
 import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -335,6 +335,7 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
     const [pages, setPages] = useState<PageContent[]>([
         { personalInfo, experience, education, projects, skills, references }
     ]);
+    const isInitialLoad = useRef(true);
 
     // Calculate pagination based on content overflow by measuring actual rendered heights
     useEffect(() => {
@@ -344,8 +345,6 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
             return;
         }
 
-        // Debounce the expensive calculation
-        const timeoutId = setTimeout(() => {
         const calculatePages = async () => {
             // Filter out empty items
             const validExperience = experience.filter(isAnyFieldFilled);
@@ -599,8 +598,17 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
             }
         };
 
-        calculatePages();
-        }, 300); // Debounce by 300ms
+        // Run immediately on initial load, debounce on subsequent updates
+        if (isInitialLoad.current) {
+            isInitialLoad.current = false;
+            calculatePages();
+            return;
+        }
+
+        // Debounce the expensive calculation for subsequent updates
+        const timeoutId = setTimeout(() => {
+            calculatePages();
+        }, 300);
         
         return () => clearTimeout(timeoutId);
     }, [toGenerate, personalInfo, experience, education, projects, skills, references]);
