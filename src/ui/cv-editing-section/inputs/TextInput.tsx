@@ -44,7 +44,7 @@ function TextInput({ label, name, type, placeholder, value, onChange }: { label?
           type={type} 
           name={name} 
           placeholder={placeholder} 
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white" 
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-inset focus:ring-blue-500 focus:border-transparent outline-none transition bg-white" 
           value={localValue} 
           onChange={handleChange} 
         />
