@@ -710,7 +710,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
     const { name, email, phone, links, jobTitle } = personalInfo;
     
     return (
-        <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-71 origin-bottom fixed bottom-10"}`}>
+        <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-66 2xl:scale-67 origin-bottom fixed bottom-14"}`}>
             <div className={`inner-cv-constraints-web`}>
             {/* Header */}
             <header className="text-center mb-4">
