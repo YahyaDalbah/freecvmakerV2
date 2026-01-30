@@ -253,7 +253,7 @@ function CvPageContent() {
 
     return (
         <div className="relative grid grid-cols-1 xl:grid-cols-2">
-            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12 bg-gray-50 pt-20`}>
+            <div className={`${showCvOnSmall ? 'hidden' : 'flex'} xl:flex flex-col gap-12 p-12 bg-gray-50 pt-24`}>
                 {/* Personal Info */}
                 <div>
                     <SectionTitle title="Personal Info" />

@@ -17,7 +17,7 @@ function DropdownMenu({ children, onDelete, title }: { children: React.ReactNode
 
     return (
         <div
-            className="border border-gray-300 rounded-md px-4 py-8"
+            className="border border-gray-300 rounded-md px-4 py-8 bg-white"
         >
             <div className="flex justify-between items-center cursor-pointer"
                 onMouseEnter={() => setIsHovered(true)}
