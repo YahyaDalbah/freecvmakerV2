@@ -25,7 +25,8 @@ function CvPageContent() {
     const isLargeScreen = useMediaQuery('(min-width: 1280px)'); // xl breakpoint
     const [isLoading, setIsLoading] = useState(true);
     const [personalInfo, setPersonalInfo] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         phone: '',
         jobTitle: '',
@@ -56,7 +57,8 @@ function CvPageContent() {
 
                 if (data) {
                     setPersonalInfo({
-                        name: data.personalInfo?.name || '',
+                        firstName: data.personalInfo?.firstName || '',
+                        lastName: data.personalInfo?.lastName || '',
                         email: data.personalInfo?.email || '',
                         phone: data.personalInfo?.phone || '',
                         jobTitle: data.personalInfo?.jobTitle || '',
@@ -264,7 +266,8 @@ function CvPageContent() {
                 <div>
                     <SectionTitle title="Personal Info" />
                     <GridInputsContainer>
-                        <TextInput label="Name" name="name" type="text" placeholder="Enter your name" value={personalInfo.name} onChange={(e) => updatePersonalInfo('name', e.target.value)} />
+                        <TextInput label="First Name" name="firstName" type="text" placeholder="Enter your first name" value={personalInfo.firstName} onChange={(e) => updatePersonalInfo('firstName', e.target.value)} />
+                        <TextInput label="Last Name" name="lastName" type="text" placeholder="Enter your last name" value={personalInfo.lastName} onChange={(e) => updatePersonalInfo('lastName', e.target.value)} />
                         <TextInput label="Email" name="email" type="email" placeholder="Enter your email" value={personalInfo.email} onChange={(e) => updatePersonalInfo('email', e.target.value)} />
                         <TextInput label="Phone" name="phone" type="tel" placeholder="Enter your phone" value={personalInfo.phone} onChange={(e) => updatePersonalInfo('phone', e.target.value)} />
                         <TextInput label="Job Title" name="jobTitle" type="text" placeholder="Enter your job title" value={personalInfo.jobTitle} onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)} />

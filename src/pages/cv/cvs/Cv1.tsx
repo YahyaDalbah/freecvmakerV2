@@ -398,9 +398,10 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
                 const linksHtml = (personalInfo.links || []).filter(link => link?.trim()).map((link, index) => 
                     `${index > 0 ? '<span> | </span>' : ''}<a class="text-blue-600 underline" href="${link}">${link}</a>`
                 ).join('');
+                const fullName = [personalInfo.firstName, personalInfo.lastName].filter(Boolean).join(' ');
                 const headerHtml = `
                     <div class="text-center mb-4">
-                        <h1 class="font-bold tracking-tight text-4xl">${personalInfo.name || ''}</h1>
+                        <h1 class="font-bold tracking-tight text-4xl">${fullName || ''}</h1>
                         <p class="text-gray-600 font-bold text-xl">${personalInfo.jobTitle || ''}</p>
                         <div class="text-[16px]">${personalInfo.phone || ''}</div>
                         <div class="text-[16px]">${linksHtml}</div>
@@ -707,14 +708,15 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
     showReferencesTitle?: boolean
 }) {
 
-    const { name, email, phone, links, jobTitle } = personalInfo;
+    const { firstName, lastName, email, phone, links, jobTitle } = personalInfo;
+    const fullName = [firstName, lastName].filter(Boolean).join(' ');
     
     return (
         <div className={`bg-white leading-[1.15rem] ${toGenerate ? "cv-constraints" : "cv-constraints-web p-8 scale-66 2xl:scale-67 origin-bottom fixed bottom-14"}`}>
             <div className={`inner-cv-constraints-web`}>
             {/* Header */}
             <header className="text-center mb-4">
-                <h1 className="font-bold tracking-tight text-4xl">{name}</h1>
+                <h1 className="font-bold tracking-tight text-4xl">{fullName}</h1>
                 <p className="text-gray-600 font-bold text-xl">{jobTitle}</p>
                 <div className="text-[16px]">
                     <span>{phone}</span>

@@ -36,7 +36,8 @@ export type Reference = {
     description?: string;
 }
 export type PersonalInfo = {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     phone?: string;
     jobTitle?: string;
