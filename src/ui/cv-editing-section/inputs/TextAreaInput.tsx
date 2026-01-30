@@ -3,7 +3,6 @@ import InputLabel from "./InputLabel";
 import MDEditor from "@uiw/react-md-editor";
 import remarkGfm from "remark-gfm";
 import { useAutoSave } from "../../../contexts/AutoSaveContext";
-import { isAuthenticated } from "../../../apis/cvApi";
 
 function TextAreaInput({ span = false, label, name, value = "", onChange }: { span?: boolean, label?: string, name: string, value: string | undefined, onChange: (value: string) => void }) {
   const [localValue, setLocalValue] = useState(value ?? "");
@@ -17,7 +16,7 @@ function TextAreaInput({ span = false, label, name, value = "", onChange }: { sp
   // Debounced onChange to parent
   useEffect(() => {
     // If local value is different, we're in "saving" state
-    if (localValue !== value && isAuthenticated()) {
+    if (localValue !== value) {
       startSaving();
     }
 

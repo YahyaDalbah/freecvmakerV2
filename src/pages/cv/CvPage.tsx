@@ -13,7 +13,7 @@ import { saveAs } from "file-saver";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { AutoSaveProvider, useAutoSave } from "../../contexts/AutoSaveContext";
 import AutoSaveIndicator from "../../ui/AutoSaveIndicator";
-import { getCvData, updateCvData, isAuthenticated, type CvData } from "../../apis/cvApi";
+import { getCvData, updateCvData, isAuthenticated, getCvDataFromLocalStorage, saveCvDataToLocalStorage, type CvData } from "../../apis/cvApi";
 
 const generateId = (): string => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
@@ -45,26 +45,30 @@ function CvPageContent() {
 
     useEffect(() => {
         const loadCvData = async () => {
-            if (!isAuthenticated()) {
-                setIsLoading(false);
-                return;
-            }
-
             try {
-                const data = await getCvData();
-                setPersonalInfo({
-                    name: data.personalInfo?.name || '',
-                    email: data.personalInfo?.email || '',
-                    phone: data.personalInfo?.phone || '',
-                    jobTitle: data.personalInfo?.jobTitle || '',
-                    city: data.personalInfo?.city || '',
-                    links: data.personalInfo?.links || ['', '', '']
-                });
-                setExperience(data.experience || []);
-                setEducation(data.education || []);
-                setSkills(data.skills || []);
-                setProjects(data.projects || []);
-                setReferences(data.references || []);
+                let data: CvData | null = null;
+                
+                if (isAuthenticated()) {
+                    data = await getCvData();
+                } else {
+                    data = getCvDataFromLocalStorage();
+                }
+
+                if (data) {
+                    setPersonalInfo({
+                        name: data.personalInfo?.name || '',
+                        email: data.personalInfo?.email || '',
+                        phone: data.personalInfo?.phone || '',
+                        jobTitle: data.personalInfo?.jobTitle || '',
+                        city: data.personalInfo?.city || '',
+                        links: data.personalInfo?.links || ['', '', '']
+                    });
+                    setExperience(data.experience || []);
+                    setEducation(data.education || []);
+                    setSkills(data.skills || []);
+                    setProjects(data.projects || []);
+                    setReferences(data.references || []);
+                }
             } catch (error) {
                 console.error('Failed to load CV data:', error);
             } finally {
@@ -85,10 +89,6 @@ function CvPageContent() {
     }, [isLoading]);
 
     const saveCvData = useCallback(async () => {
-        if (!isAuthenticated()) {
-            return;
-        }
-
         try {
             startSaving();
             const cvData: CvData = {
@@ -99,7 +99,13 @@ function CvPageContent() {
                 projects,
                 references
             };
-            await updateCvData(cvData);
+            
+            if (isAuthenticated()) {
+                await updateCvData(cvData);
+            } else {
+                saveCvDataToLocalStorage(cvData);
+            }
+            
             finishSaving();
         } catch (error) {
             console.error('Failed to save CV data:', error);

@@ -71,3 +71,25 @@ export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
 };
 
+// LocalStorage functions for unauthenticated users
+const LOCAL_STORAGE_KEY = 'cvData_guest';
+
+// Get CV data from localStorage
+export const getCvDataFromLocalStorage = (): CvData | null => {
+  try {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error('Failed to get CV data from localStorage:', error);
+    return null;
+  }
+};
+
+// Save CV data to localStorage
+export const saveCvDataToLocalStorage = (cvData: CvData): void => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cvData));
+  } catch (error) {
+    console.error('Failed to save CV data to localStorage:', error);
+  }
+};
