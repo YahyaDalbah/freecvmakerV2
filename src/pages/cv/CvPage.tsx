@@ -311,7 +311,7 @@ function CvPageContent() {
                                 </GridInputsContainer>
                             </DropdownMenu>
                         ))}
-                        <Button variant="link" onClick={addExperience}><FontAwesomeIcon icon={faPlus} /> Add Experience</Button>
+                        <Button variant="ghost" onClick={addExperience}><FontAwesomeIcon icon={faPlus} /> Add Experience</Button>
                     </div>
                 </div>
                 {/* Education */}
@@ -332,7 +332,7 @@ function CvPageContent() {
                                 </GridInputsContainer>
                             </DropdownMenu>
                         ))}
-                        <Button variant="link" onClick={addEducation}><FontAwesomeIcon icon={faPlus} /> Add Education</Button>
+                        <Button variant="ghost" onClick={addEducation}><FontAwesomeIcon icon={faPlus} /> Add Education</Button>
                     </div>
                 </div>
                 {/* Projects */}
@@ -348,7 +348,7 @@ function CvPageContent() {
                                 </GridInputsContainer>
                             </DropdownMenu>
                         ))}
-                        <Button variant="link" onClick={addProject}><FontAwesomeIcon icon={faPlus} /> Add Project</Button>
+                        <Button variant="ghost" onClick={addProject}><FontAwesomeIcon icon={faPlus} /> Add Project</Button>
                     </div>
                 </div>
                 {/* Skills */}
@@ -362,7 +362,7 @@ function CvPageContent() {
                                 </GridInputsContainer>
                             </DropdownMenu>
                         ))}
-                        <Button variant="link" onClick={addSkill}><FontAwesomeIcon icon={faPlus} /> Add Skill</Button>
+                        <Button variant="ghost" onClick={addSkill}><FontAwesomeIcon icon={faPlus} /> Add Skill</Button>
                     </div>
                 </div>
                 {/* References */}
@@ -380,7 +380,7 @@ function CvPageContent() {
                                 </GridInputsContainer>
                             </DropdownMenu>
                         ))}
-                        <Button variant="link" onClick={addReference}><FontAwesomeIcon icon={faPlus} /> Add Reference</Button>
+                        <Button variant="ghost" onClick={addReference}><FontAwesomeIcon icon={faPlus} /> Add Reference</Button>
                     </div>
                 </div>
             </div>

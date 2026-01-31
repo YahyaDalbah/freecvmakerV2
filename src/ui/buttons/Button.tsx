@@ -5,7 +5,7 @@ type ButtonProps = {
   onClick?: () => void;
   color?: 'blue' | 'white';
   type?: 'button' | 'submit';
-  variant?: 'solid' | 'link';
+  variant?: 'solid' | 'ghost';
   fullWidth?: boolean;
   className?: string;
   shadow?: boolean;
@@ -54,11 +54,11 @@ function SolidButton({ children, onClick, color, type, fullWidth, className, sha
   }
 }
 
-function LinkButton({ children, onClick, className, disabled = false }: ButtonProps) {
+function GhostButton({ children, onClick, className, disabled = false }: ButtonProps) {
   return (
     <button 
       type="button"
-      className={`bg-transparent font-semibold w-fit transition ${disabled ? 'text-blue-300 cursor-not-allowed' : 'text-blue-600 hover:text-blue-700 cursor-pointer'} ${className || ''}`} 
+      className={`bg-transparent font-semibold w-fit px-3 py-2 rounded-lg transition-all duration-200 ${disabled ? 'text-blue-300 cursor-not-allowed' : 'text-blue-600 hover:bg-gray-200 cursor-pointer'} ${className || ''}`} 
       onClick={onClick}
       disabled={disabled}
     >
@@ -85,9 +85,9 @@ export default function Button({
               {children}
             </SolidButton>
         )
-    } else if (variant === 'link') {
+    } else if (variant === 'ghost') {
         return (
-            <LinkButton onClick={onClick} className={className} disabled={disabled}>{children}</LinkButton>
+            <GhostButton onClick={onClick} className={className} disabled={disabled}>{children}</GhostButton>
         )
     }
 }
