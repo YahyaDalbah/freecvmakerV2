@@ -26,6 +26,7 @@ export default function PrintCvPage() {
       const json = encoded ? decodeCvData(encoded) : {};
       return json as {
         personalInfo: PersonalInfo;
+        professionalSummary?: string;
         experience: Experience[];
         education: Education[];
         projects: Project[];
@@ -35,6 +36,7 @@ export default function PrintCvPage() {
     } catch {
       return {
         personalInfo: {},
+        professionalSummary: '',
         experience: [],
         education: [],
         projects: [],
@@ -48,6 +50,7 @@ export default function PrintCvPage() {
     <Cv1
       toGenerate={true}
       personalInfo={data.personalInfo}
+      professionalSummary={data.professionalSummary}
       experience={data.experience}
       education={data.education}
       projects={data.projects}

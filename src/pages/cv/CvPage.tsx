@@ -34,6 +34,7 @@ function CvPageContent() {
         links: ['', '', '']
     });
     
+    const [professionalSummary, setProfessionalSummary] = useState('');
     const [experience, setExperience] = useState<Experience[]>([]);
     const [education, setEducation] = useState<Education[]>([]);
     const [skills, setSkills] = useState<Skill[]>([]);
@@ -65,6 +66,7 @@ function CvPageContent() {
                         city: data.personalInfo?.city || '',
                         links: data.personalInfo?.links || ['', '', '']
                     });
+                    setProfessionalSummary(data.professionalSummary || '');
                     setExperience(data.experience || []);
                     setEducation(data.education || []);
                     setSkills(data.skills || []);
@@ -95,6 +97,7 @@ function CvPageContent() {
             startSaving();
             const cvData: CvData = {
                 personalInfo,
+                professionalSummary,
                 experience,
                 education,
                 skills,
@@ -113,7 +116,7 @@ function CvPageContent() {
             console.error('Failed to save CV data:', error);
             finishSaving(true);
         }
-    }, [personalInfo, experience, education, skills, projects, references, startSaving, finishSaving]);
+    }, [personalInfo, professionalSummary, experience, education, skills, projects, references, startSaving, finishSaving]);
 
     useEffect(() => {
         if (!dataLoadedRef.current) {
@@ -133,7 +136,7 @@ function CvPageContent() {
                 clearTimeout(saveTimeoutRef.current);
             }
         };
-    }, [personalInfo, experience, education, skills, projects, references]);
+    }, [personalInfo, professionalSummary, experience, education, skills, projects, references]);
     
 
     const updatePersonalInfo = useCallback((field: keyof typeof personalInfo, value: string | string[]) => {
@@ -221,16 +224,18 @@ function CvPageContent() {
     // Memoize CV props to prevent unnecessary re-renders
     const cvProps = useMemo(() => ({
         personalInfo,
+        professionalSummary,
         experience,
         education,
         projects,
         skills,
         references
-    }), [personalInfo, experience, education, projects, skills, references]);
+    }), [personalInfo, professionalSummary, experience, education, projects, skills, references]);
 
     async function handleGeneratePdf() {
         const payload = {
             personalInfo,
+            professionalSummary,
             experience,
             education,
             projects,
@@ -276,6 +281,17 @@ function CvPageContent() {
                         <TextInput label="Link 2 (Github, Linkedin, Portfolio, ...)" name="link2" type="text" placeholder="Enter your url" value={personalInfo.links?.[1] || ''} onChange={(e) => updateLink(1, e.target.value)} />
                         <TextInput label="Link 3 (Github, Linkedin, Portfolio, ...)" name="link3" type="text" placeholder="Enter your url" value={personalInfo.links?.[2] || ''} onChange={(e) => updateLink(2, e.target.value)} />
                     </GridInputsContainer>
+                </div>
+                {/* Professional Summary */}
+                <div>
+                    <SectionTitle title="Professional Summary" />
+                    <TextAreaInput 
+                        span={true} 
+                        label="Summary" 
+                        name="professionalSummary" 
+                        value={professionalSummary} 
+                        onChange={(value) => setProfessionalSummary(value)} 
+                    />
                 </div>
                 {/* Experience */}
                 <div>

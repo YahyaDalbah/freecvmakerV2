@@ -1,8 +1,7 @@
 import type { Education, Experience, PersonalInfo, Project, Skill, Reference } from "../../../apis/types";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import SectionTitle from "../../../ui/cv-sections/SectionTitle";
 import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
+import MarkdownRender from "../../../ui/cv-sections/MarkdownRender";
 import { useEffect, useState, memo, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -20,11 +19,13 @@ function isAnyFieldFilled(section: any): boolean {
 
 type PageContent = {
     personalInfo: PersonalInfo;
+    professionalSummary?: string;
     experience: Experience[];
     education: Education[];
     projects: Project[];
     skills: Skill[];
     references: Reference[];
+    showProfessionalSummaryTitle?: boolean;
     showExperienceTitle?: boolean;
     showEducationTitle?: boolean;
     showProjectsTitle?: boolean;
@@ -330,10 +331,10 @@ function findDescriptionSplitPoint(
     return lastFittingIndex > 0 && lastFittingIndex < tokens.length - 1 ? lastFittingIndex : null;
 }
 
-function Cv1({ toGenerate, personalInfo, experience, education, projects, skills, references }: { toGenerate?: boolean, personalInfo: PersonalInfo, experience: Experience[], education: Education[], projects: Project[], skills: Skill[], references: Reference[] }) {
+function Cv1({ toGenerate, personalInfo, professionalSummary, experience, education, projects, skills, references }: { toGenerate?: boolean, personalInfo: PersonalInfo, professionalSummary?: string, experience: Experience[], education: Education[], projects: Project[], skills: Skill[], references: Reference[] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState<PageContent[]>([
-        { personalInfo, experience, education, projects, skills, references }
+        { personalInfo, professionalSummary, experience, education, projects, skills, references }
     ]);
     const isInitialLoad = useRef(true);
 
@@ -341,7 +342,7 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
     useEffect(() => {
         if (toGenerate) {
             // When generating PDF, show all content on one page
-            setPages([{ personalInfo, experience, education, projects, skills, references }]);
+            setPages([{ personalInfo, professionalSummary, experience, education, projects, skills, references }]);
             return;
         }
 
@@ -354,7 +355,7 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
             const validReferences = references.filter(isAnyFieldFilled);
 
             // If no content, show single empty page
-            if (validExperience.length === 0 && validEducation.length === 0 && 
+            if (!professionalSummary?.trim() && validExperience.length === 0 && validEducation.length === 0 && 
                 validProjects.length === 0 && validSkills.length === 0 && validReferences.length === 0) {
                 setPages([{ personalInfo, experience: [], education: [], projects: [], skills: [], references: [] }]);
                 return;
@@ -457,6 +458,38 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
                     getDescription: (ref) => ref.description,
                     hasDescription: (ref) => !!ref.description && ref.description.trim().length > 0
                 };
+
+                // Process Professional Summary (if exists)
+                if (professionalSummary && professionalSummary.trim()) {
+                    // Add spacing before section
+                    currentHeight += sectionSpacing;
+                    
+                    // Check if section title fits
+                    if (currentHeight + sectionTitleHeight > maxPageHeight) {
+                        newPages.push({ ...currentPageContent });
+                        currentPageContent = { personalInfo: {}, experience: [], education: [], projects: [], skills: [], references: [] };
+                        currentHeight = 0;
+                    }
+                    
+                    // Set section title flag
+                    currentPageContent.showProfessionalSummaryTitle = true;
+                    currentPageContent.professionalSummary = professionalSummary;
+                    currentHeight += sectionTitleHeight;
+                    
+                    // Measure and add summary content
+                    const summaryHtml = `<div class="mb-4">${renderMarkdownToHtml(professionalSummary)}</div>`;
+                    const summaryHeight = measureHeight(summaryHtml);
+                    
+                    // Check if summary fits with the title
+                    if (currentHeight + summaryHeight > maxPageHeight) {
+                        // Title fits but summary doesn't - move to next page
+                        newPages.push({ ...currentPageContent });
+                        currentPageContent = { personalInfo: {}, professionalSummary, experience: [], education: [], projects: [], skills: [], references: [] };
+                        currentHeight = summaryHeight;
+                    } else {
+                        currentHeight += summaryHeight;
+                    }
+                }
 
                 // Process all sections using generic function
                 if (validExperience.length > 0) {
@@ -612,7 +645,7 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
         }, 300);
         
         return () => clearTimeout(timeoutId);
-    }, [toGenerate, personalInfo, experience, education, projects, skills, references]);
+    }, [toGenerate, personalInfo, professionalSummary, experience, education, projects, skills, references]);
 
     const handlePrevious = () => {
         setCurrentPage(prev => Math.max(1, prev - 1));
@@ -636,6 +669,8 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
                 projects={pages[currentPage - 1]?.projects || []} 
                 skills={pages[currentPage - 1]?.skills || []}
                 references={pages[currentPage - 1]?.references || []}
+                professionalSummary={pages[currentPage - 1]?.professionalSummary}
+                showProfessionalSummaryTitle={pages[currentPage - 1]?.showProfessionalSummaryTitle}
                 showExperienceTitle={pages[currentPage - 1]?.showExperienceTitle}
                 showEducationTitle={pages[currentPage - 1]?.showEducationTitle}
                 showProjectsTitle={pages[currentPage - 1]?.showProjectsTitle}
@@ -693,14 +728,16 @@ function Cv1({ toGenerate, personalInfo, experience, education, projects, skills
     );
 }
 
-function CvPage({ toGenerate, personalInfo, experience, education, projects, skills, references, showExperienceTitle, showEducationTitle, showProjectsTitle, showSkillsTitle, showReferencesTitle }: { 
+function CvPage({ toGenerate, personalInfo, professionalSummary, experience, education, projects, skills, references, showProfessionalSummaryTitle, showExperienceTitle, showEducationTitle, showProjectsTitle, showSkillsTitle, showReferencesTitle }: { 
     toGenerate?: boolean, 
-    personalInfo: PersonalInfo, 
+    personalInfo: PersonalInfo,
+    professionalSummary?: string,
     experience: Experience[], 
     education: Education[], 
     projects: Project[], 
     skills: Skill[],
     references: Reference[],
+    showProfessionalSummaryTitle?: boolean,
     showExperienceTitle?: boolean,
     showEducationTitle?: boolean,
     showProjectsTitle?: boolean,
@@ -744,6 +781,16 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
             {/* Sections */}
             <div className="text-[16px] space-y-5">
 
+                {/* Professional Summary */}
+                {(professionalSummary || showProfessionalSummaryTitle) && (
+                    <section>
+                        <SectionTitle title={showProfessionalSummaryTitle || toGenerate ? "Professional Summary" : ""} />
+                        {professionalSummary && (
+                            <MarkdownRender content={professionalSummary} className="mb-4" />
+                        )}
+                    </section>
+                )}
+
                 {/* Experience */}
                 {(experience.length > 0 || showExperienceTitle) && (
                     <section>
@@ -756,21 +803,19 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                         {/* Only show header if NOT a continuation */}
                                         {!isContinuation && (
                                             <>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <span className="font-bold">{exp.jobTitle}</span>
-                                            {exp.company && <span> | {exp.company}</span>}
-                                        </div>
-                                        <div className="whitespace-nowrap">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ""}</div>
-                                    </div>
-                                    <div className="mt-0.5">{exp.city}</div>
+                                                <div className="flex justify-between">
+                                                    <div>
+                                                        <span className="font-bold">{exp.jobTitle}</span>
+                                                        {exp.company && <span> | {exp.company}</span>}
+                                                    </div>
+                                                    <div className="whitespace-nowrap">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ""}</div>
+                                                </div>
+                                                <div className="mt-0.5">{exp.city}</div>
                                             </>
                                         )}
                                         {/* Always show description */}
                                     {exp.description && (
-                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{exp.description}</ReactMarkdown>
-                                        </div>
+                                        <MarkdownRender content={exp.description} className={isContinuation ? '' : 'mt-1'} />
                                     )}
                                 </div>
                                 );
@@ -801,9 +846,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                         )}
                                         {/* Always show description */}
                                         {edu.description && (
-                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
-                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{edu.description}</ReactMarkdown>
-                                            </div>
+                                            <MarkdownRender content={edu.description} className={isContinuation ? '' : 'mt-1'} />
                                         )}
                                     </div>
                                 );
@@ -827,9 +870,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                         )}
                                         {/* Always show description */}
                                         {proj.description && (
-                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
-                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{proj.description}</ReactMarkdown>
-                                            </div>
+                                            <MarkdownRender content={proj.description} className={isContinuation ? '' : 'mt-1'} />
                                         )}
                                     </div>
                                 );
@@ -873,9 +914,7 @@ function CvPage({ toGenerate, personalInfo, experience, education, projects, ski
                                         )}
                                         {/* Always show description */}
                                     {ref.description && (
-                                            <div className={`markdown-content ${isContinuation ? '' : 'mt-1'}`}>
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{ref.description}</ReactMarkdown>
-                                        </div>
+                                        <MarkdownRender content={ref.description} className={isContinuation ? '' : 'mt-1'} />
                                     )}
                                 </div>
                                 );

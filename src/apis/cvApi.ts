@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://localhost:3001/api';
 
 export interface CvData {
   personalInfo: PersonalInfo;
+  professionalSummary?: string;
   experience: Experience[];
   education: Education[];
   skills: Skill[];
