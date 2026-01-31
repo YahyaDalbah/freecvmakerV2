@@ -45,41 +45,49 @@ export interface SectionConfig<T extends SplittableItem> {
     hasDescription: (item: T) => boolean;
 }
 
-// Helper to render markdown to HTML string (simplified - handles common patterns)
+// Helper to render markdown to HTML string (matches MarkdownRender.tsx behavior)
+// Each line is rendered separately with proper line breaks
 export function renderMarkdownToHtml(markdown: string): string {
     if (!markdown) return '';
     
-    let html = markdown;
-    
-    // Convert markdown lists to HTML lists
-    const lines = html.split('\n');
-    let inList = false;
+    const lines = markdown.split('\n');
     let result = '';
+    
+    // Wrap in a container that matches MarkdownRender styling
+    result += '<div class="[&_p]:m-0 [&_p]:inline">';
     
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const isListItem = line.trim().startsWith('- ') || line.trim().startsWith('* ');
+        // Each line is wrapped in a block span, matching MarkdownRender.tsx
+        result += '<span class="block">';
         
-        if (isListItem) {
-            if (!inList) {
-                result += '<ul class="list-disc pl-5">';
-                inList = true;
-            }
-            result += `<li class="leading-[1.15rem]">${line.trim().substring(2)}</li>`;
-        } else {
-            if (inList) {
-                result += '</ul>';
-                inList = false;
-            }
-            if (line.trim()) {
-                result += `<p class="leading-[1.15rem]">${line}</p>`;
-            }
+        // Simple markdown processing for each line
+        let processedLine = line;
+        
+        // Handle bold **text** or __text__
+        processedLine = processedLine.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        processedLine = processedLine.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        
+        // Handle italic *text* or _text_
+        processedLine = processedLine.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        processedLine = processedLine.replace(/_(.+?)_/g, '<em>$1</em>');
+        
+        // Handle links [text](url)
+        processedLine = processedLine.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-600 underline">$1</a>');
+        
+        // Handle list items
+        if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+            processedLine = '<ul class="list-disc pl-5"><li>' + processedLine.trim().substring(2) + '</li></ul>';
+        } else if (line.trim()) {
+            // Wrap non-empty lines in inline paragraph
+            processedLine = '<p class="inline">' + processedLine + '</p>';
         }
+        
+        result += processedLine;
+        result += '</span>';
     }
     
-    if (inList) {
-        result += '</ul>';
-    }
+    result += '</div>';
     
     return result;
 }
