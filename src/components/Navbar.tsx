@@ -1,12 +1,31 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useMatches } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import Button from "../ui/buttons/Button";
+import { matchShowsGeneratePdfButton } from "../layoutContext";
 
-export default function Navbar() {
+export default function Navbar({
+    cvGeneratePdfHandler,
+}: {
+    cvGeneratePdfHandler: (() => Promise<void>) | null;
+}) {
     const navigate = useNavigate();
+    const matches = useMatches();
+    const showGeneratePdfButton = matchShowsGeneratePdfButton(matches);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [pdfLoading, setPdfLoading] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    async function handleGeneratePdfClick() {
+        if (!cvGeneratePdfHandler || pdfLoading) return;
+        setPdfLoading(true);
+        try {
+            await cvGeneratePdfHandler();
+        } finally {
+            setPdfLoading(false);
+        }
+    }
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -55,7 +74,7 @@ export default function Navbar() {
                 </Link>
 
                 {/* User Section */}
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
                     {isLoggedIn ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
@@ -107,6 +126,21 @@ export default function Navbar() {
                             >
                                 Sign Up
                             </Link>
+                        </div>
+                    )}
+                    {showGeneratePdfButton && (
+                        <div className="flex shrink-0 items-center">
+                            <Button
+                                variant="solid"
+                                color="emerald"
+                                shadow={false}
+                                disabled={!cvGeneratePdfHandler || pdfLoading}
+                                loading={pdfLoading}
+                                onClick={() => void handleGeneratePdfClick()}
+                                className="!px-3 !py-2 text-sm"
+                            >
+                                Generate PDF
+                            </Button>
                         </div>
                     )}
                 </div>

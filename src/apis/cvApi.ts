@@ -2,9 +2,37 @@ import type { PersonalInfo, Experience, Education, Skill, Project, Reference } f
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
+export const CV_SECTION_IDS = [
+  'professionalSummary',
+  'experience',
+  'education',
+  'projects',
+  'skills',
+  'references',
+] as const;
+
+export type CvSectionId = (typeof CV_SECTION_IDS)[number];
+
+export function normalizeSectionOrder(order: string[] | undefined | null): CvSectionId[] {
+  const valid = new Set<string>(CV_SECTION_IDS);
+  const seen = new Set<string>();
+  const result: CvSectionId[] = [];
+  for (const id of order ?? []) {
+    if (valid.has(id) && !seen.has(id)) {
+      result.push(id as CvSectionId);
+      seen.add(id);
+    }
+  }
+  for (const id of CV_SECTION_IDS) {
+    if (!seen.has(id)) result.push(id);
+  }
+  return result;
+}
+
 export interface CvData {
   personalInfo: PersonalInfo;
   professionalSummary?: string;
+  sectionOrder?: CvSectionId[];
   experience: Experience[];
   education: Education[];
   skills: Skill[];

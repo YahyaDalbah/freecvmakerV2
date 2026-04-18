@@ -4,7 +4,7 @@ import MDEditor from "@uiw/react-md-editor";
 import remarkGfm from "remark-gfm";
 import { useAutoSave } from "../../../contexts/AutoSaveContext";
 
-function TextAreaInput({ span = false, label, name, value = "", onChange }: { span?: boolean, label?: string, name: string, value: string | undefined, onChange: (value: string) => void }) {
+function TextAreaInput({ span = false, label, name: _name, value = "", onChange }: { span?: boolean, label?: string, name: string, value: string | undefined, onChange: (value: string) => void }) {
   const [localValue, setLocalValue] = useState(value ?? "");
   const { startSaving, finishSaving } = useAutoSave();
 

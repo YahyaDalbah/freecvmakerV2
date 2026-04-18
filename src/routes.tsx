@@ -6,6 +6,7 @@ import SignupPage from "./pages/auth/SignupPage";
 import Logout from "./pages/auth/Logout";
 import NotFoundPage from "./pages/NotFoundPage";
 import Layout from "./components/Layout";
+import type { AppRouteHandle } from "./layoutContext";
 
 export const routes: RouteObject[] = [
   {
@@ -15,6 +16,7 @@ export const routes: RouteObject[] = [
       {
         path: "/",
         element: <CvPage />,
+        handle: { showGeneratePdfButton: true } satisfies AppRouteHandle,
       },
       {
         path: "*",

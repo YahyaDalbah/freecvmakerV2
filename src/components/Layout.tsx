@@ -1,11 +1,22 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
+import { useState, useCallback } from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar";
+import type { RootLayoutOutletContext } from "../layoutContext";
 
 export default function Layout() {
+    const [cvGeneratePdf, setCvGeneratePdf] = useState<(() => Promise<void>) | null>(null);
+
+    const registerCvGeneratePdf = useCallback((handler: (() => Promise<void>) | null) => {
+        // Functional update only: `setState(fn)` must not be confused with storing `fn` as state (React would call it).
+        setCvGeneratePdf((_prev) => handler);
+    }, []);
+
+    const outletContext: RootLayoutOutletContext = { registerCvGeneratePdf };
+
     return (
         <>
-            <Navbar />
-            <Outlet />
+            <Navbar cvGeneratePdfHandler={cvGeneratePdf} />
+            <Outlet context={outletContext} />
         </>
     );
 }

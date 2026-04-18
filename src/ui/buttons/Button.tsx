@@ -1,93 +1,126 @@
-import LoadingSpinner from '../svgs/LoadingSpinner';
+import LoadingSpinner from "../svgs/LoadingSpinner";
+
+export type ButtonSolidColor = "blue" | "white" | "emerald";
 
 type ButtonProps = {
-  children: React.ReactNode;
-  onClick?: () => void;
-  color?: 'blue' | 'white';
-  type?: 'button' | 'submit';
-  variant?: 'solid' | 'ghost';
-  fullWidth?: boolean;
-  className?: string;
-  shadow?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-}
+    children: React.ReactNode;
+    onClick?: () => void | Promise<void>;
+    color?: ButtonSolidColor;
+    type?: "button" | "submit";
+    variant?: "solid" | "ghost";
+    fullWidth?: boolean;
+    className?: string;
+    shadow?: boolean;
+    disabled?: boolean;
+    loading?: boolean;
+};
 
-function SolidButton({ children, onClick, color, type, fullWidth, className, shadow = true, disabled = false, loading = false }: ButtonProps) {
-  const baseClasses = "px-4 py-3 rounded-lg font-semibold transition duration-200";
-  const widthClasses = fullWidth ? "w-full" : "";
-  const isDisabled = disabled || loading;
-  const cursorClass = isDisabled ? "cursor-not-allowed" : "cursor-pointer";
-  
-  if (color === 'blue') {
+const SOLID_PALETTE: Record<
+    ButtonSolidColor,
+    { rest: string; disabled: string; spinner: "white" | "gray" }
+> = {
+    blue: {
+        rest: "bg-blue-600 text-white hover:bg-blue-700",
+        disabled: "bg-blue-400 text-white opacity-60",
+        spinner: "white",
+    },
+    white: {
+        rest: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50",
+        disabled: "bg-gray-100 text-gray-400 border border-gray-200 opacity-60",
+        spinner: "gray",
+    },
+    emerald: {
+        rest: "bg-emerald-600 text-white hover:bg-emerald-700",
+        disabled: "bg-emerald-400 text-white opacity-60",
+        spinner: "white",
+    },
+};
+
+function SolidButton({
+    children,
+    onClick,
+    color = "blue",
+    type,
+    fullWidth,
+    className,
+    shadow = true,
+    disabled = false,
+    loading = false,
+}: ButtonProps) {
+    const baseClasses = "px-4 py-3 rounded-lg font-semibold transition duration-200";
+    const widthClasses = fullWidth ? "w-full" : "";
+    const isDisabled = disabled || loading;
+    const cursorClass = isDisabled ? "cursor-not-allowed" : "cursor-pointer";
+    const palette = SOLID_PALETTE[color];
+    const toneClasses = isDisabled ? palette.disabled : palette.rest;
+    const shadowClasses =
+        shadow && !isDisabled ? "shadow-lg hover:shadow-xl" : "";
+
     return (
-      <button 
-        type={type || 'button'}
-        className={`${baseClasses} ${widthClasses} ${cursorClass} ${isDisabled ? 'bg-blue-400 text-white opacity-60' : 'bg-blue-600 text-white hover:bg-blue-700'} ${shadow && !isDisabled ? 'shadow-lg hover:shadow-xl' : ''} ${className || ''}`} 
-        onClick={onClick}
-        disabled={isDisabled}
-      >
-        {loading ? (
-          <span className="flex items-center justify-center">
-            <LoadingSpinner className="-ml-1 mr-3 h-5 w-5" color="white" />
-            {children}
-          </span>
-        ) : children}
-      </button>
-    )
-  } else if (color === 'white') {
-    return (
-      <button 
-        type={type || 'button'}
-        className={`${baseClasses} ${widthClasses} ${cursorClass} ${isDisabled ? 'bg-gray-100 text-gray-400 border-gray-200 opacity-60' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'} ${className || ''}`} 
-        onClick={onClick}
-        disabled={isDisabled}
-      >
-        {loading ? (
-          <span className="flex items-center justify-center">
-            <LoadingSpinner className="-ml-1 mr-3 h-5 w-5" color="gray" />
-            {children}
-          </span>
-        ) : children}
-      </button>
-    )
-  }
+        <button
+            type={type || "button"}
+            className={`${baseClasses} ${widthClasses} ${cursorClass} ${toneClasses} ${shadowClasses} ${className || ""}`}
+            onClick={() => void onClick?.()}
+            disabled={isDisabled}
+        >
+            {loading ? (
+                <span className="flex items-center justify-center">
+                    <LoadingSpinner className="-ml-1 mr-3 h-5 w-5" color={palette.spinner} />
+                    {children}
+                </span>
+            ) : (
+                children
+            )}
+        </button>
+    );
 }
 
 function GhostButton({ children, onClick, className, disabled = false }: ButtonProps) {
-  return (
-    <button 
-      type="button"
-      className={`bg-transparent font-semibold w-fit px-3 py-2 rounded-lg transition-all duration-200 ${disabled ? 'text-blue-300 cursor-not-allowed' : 'text-blue-600 hover:bg-gray-200 cursor-pointer'} ${className || ''}`} 
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  )
+    return (
+        <button
+            type="button"
+            className={`w-fit rounded-lg bg-transparent px-3 py-2 font-semibold transition-all duration-200 ${
+                disabled ? "cursor-not-allowed text-blue-300" : "cursor-pointer text-blue-600 hover:bg-gray-200"
+            } ${className || ""}`}
+            onClick={() => void onClick?.()}
+            disabled={disabled}
+        >
+            {children}
+        </button>
+    );
 }
 
-export default function Button({ 
-  children, 
-  onClick, 
-  variant, 
-  color = 'blue', 
-  type, 
-  fullWidth,
-  className,
-  shadow = true,
-  disabled = false,
-  loading = false
+export default function Button({
+    children,
+    onClick,
+    variant = "solid",
+    color = "blue",
+    type,
+    fullWidth,
+    className,
+    shadow = true,
+    disabled = false,
+    loading = false,
 }: ButtonProps) {
-    if (variant === 'solid') {
+    if (variant === "solid") {
         return (
-            <SolidButton onClick={onClick} color={color} type={type} fullWidth={fullWidth} className={className} shadow={shadow} disabled={disabled} loading={loading}>
-              {children}
+            <SolidButton
+                onClick={onClick}
+                color={color}
+                type={type}
+                fullWidth={fullWidth}
+                className={className}
+                shadow={shadow}
+                disabled={disabled}
+                loading={loading}
+            >
+                {children}
             </SolidButton>
-        )
-    } else if (variant === 'ghost') {
-        return (
-            <GhostButton onClick={onClick} className={className} disabled={disabled}>{children}</GhostButton>
-        )
+        );
     }
+    return (
+        <GhostButton onClick={onClick} className={className} disabled={disabled}>
+            {children}
+        </GhostButton>
+    );
 }
