@@ -10,6 +10,7 @@ import Button from "../../ui/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines, faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import CvPdfPreview from "./CvPdfPreview";
+import Templates from "./Templates";
 import { CV_PDF_PREVIEW_DEBOUNCE_MS, fetchCvPdfBlob } from "../../apis/cvPdfApi";
 import { DEFAULT_CV_TEMPLATE_ID } from "./cvTemplates";
 import { saveAs } from "file-saver";
@@ -116,7 +117,7 @@ function SortableListRow({ id, children }: { id: string; children: React.ReactNo
 }
 
 function CvPageContent() {
-    const { registerCvGeneratePdf } = useOutletContext<RootLayoutOutletContext>();
+    const { registerCvGeneratePdf, cvEditorTab } = useOutletContext<RootLayoutOutletContext>();
     const { status: autoSaveStatus, startSaving, finishSaving } = useAutoSave();
     const [showCvOnSmall, setShowCvOnSmall] = useState(true);
     const isLargeScreen = useMediaQuery("(min-width: 1024px)");
@@ -829,95 +830,101 @@ function CvPageContent() {
                     showCvOnSmall && !isLargeScreen ? "hidden lg:flex" : "flex"
                 } ${mobilePreviewOnTop ? "pb-[calc(min(42dvh,400px)+2rem)]" : ""}`}
             >
-                <div>
-                    <SectionTitle title="Personal Info" />
-                    <GridInputsContainer>
-                        <TextInput
-                            label="First Name"
-                            name="firstName"
-                            type="text"
-                            placeholder="Enter your first name"
-                            value={personalInfo.firstName}
-                            onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
-                        />
-                        <TextInput
-                            label="Last Name"
-                            name="lastName"
-                            type="text"
-                            placeholder="Enter your last name"
-                            value={personalInfo.lastName}
-                            onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
-                        />
-                        <TextInput
-                            label="Email"
-                            name="email"
-                            type="email"
-                            placeholder="Enter your email"
-                            value={personalInfo.email}
-                            onChange={(e) => updatePersonalInfo("email", e.target.value)}
-                        />
-                        <TextInput
-                            label="Phone"
-                            name="phone"
-                            type="tel"
-                            placeholder="Enter your phone"
-                            value={personalInfo.phone}
-                            onChange={(e) => updatePersonalInfo("phone", e.target.value)}
-                        />
-                        <TextInput
-                            label="Job Title"
-                            name="jobTitle"
-                            type="text"
-                            placeholder="Enter your job title"
-                            value={personalInfo.jobTitle}
-                            onChange={(e) => updatePersonalInfo("jobTitle", e.target.value)}
-                        />
-                        <TextInput
-                            label="City"
-                            name="city"
-                            type="text"
-                            placeholder="Enter your city"
-                            value={personalInfo.city}
-                            onChange={(e) => updatePersonalInfo("city", e.target.value)}
-                        />
-                        <TextInput
-                            label="Link 1 (Github, Linkedin, Portfolio, ...)"
-                            name="link1"
-                            type="text"
-                            placeholder="Enter your url"
-                            value={personalInfo.links?.[0] || ""}
-                            onChange={(e) => updateLink(0, e.target.value)}
-                        />
-                        <TextInput
-                            label="Link 2 (Github, Linkedin, Portfolio, ...)"
-                            name="link2"
-                            type="text"
-                            placeholder="Enter your url"
-                            value={personalInfo.links?.[1] || ""}
-                            onChange={(e) => updateLink(1, e.target.value)}
-                        />
-                        <TextInput
-                            label="Link 3 (Github, Linkedin, Portfolio, ...)"
-                            name="link3"
-                            type="text"
-                            placeholder="Enter your url"
-                            value={personalInfo.links?.[2] || ""}
-                            onChange={(e) => updateLink(2, e.target.value)}
-                        />
-                    </GridInputsContainer>
-                </div>
-
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={sectionSortableIds} strategy={verticalListSortingStrategy}>
-                        <div className="flex flex-col gap-12">
-                            {sectionOrder.map((sectionId) => (
-                                <SortableEditorSection key={sectionId} id={`section:${sectionId}`}>
-                                    {renderOrderedSection(sectionId)}
-                                </SortableEditorSection>
-                            ))}
+                {cvEditorTab === "editing" ? (
+                    <>
+                        <div>
+                            <SectionTitle title="Personal Info" />
+                            <GridInputsContainer>
+                                <TextInput
+                                    label="First Name"
+                                    name="firstName"
+                                    type="text"
+                                    placeholder="Enter your first name"
+                                    value={personalInfo.firstName}
+                                    onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
+                                />
+                                <TextInput
+                                    label="Last Name"
+                                    name="lastName"
+                                    type="text"
+                                    placeholder="Enter your last name"
+                                    value={personalInfo.lastName}
+                                    onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
+                                />
+                                <TextInput
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={personalInfo.email}
+                                    onChange={(e) => updatePersonalInfo("email", e.target.value)}
+                                />
+                                <TextInput
+                                    label="Phone"
+                                    name="phone"
+                                    type="tel"
+                                    placeholder="Enter your phone"
+                                    value={personalInfo.phone}
+                                    onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                                />
+                                <TextInput
+                                    label="Job Title"
+                                    name="jobTitle"
+                                    type="text"
+                                    placeholder="Enter your job title"
+                                    value={personalInfo.jobTitle}
+                                    onChange={(e) => updatePersonalInfo("jobTitle", e.target.value)}
+                                />
+                                <TextInput
+                                    label="City"
+                                    name="city"
+                                    type="text"
+                                    placeholder="Enter your city"
+                                    value={personalInfo.city}
+                                    onChange={(e) => updatePersonalInfo("city", e.target.value)}
+                                />
+                                <TextInput
+                                    label="Link 1 (Github, Linkedin, Portfolio, ...)"
+                                    name="link1"
+                                    type="text"
+                                    placeholder="Enter your url"
+                                    value={personalInfo.links?.[0] || ""}
+                                    onChange={(e) => updateLink(0, e.target.value)}
+                                />
+                                <TextInput
+                                    label="Link 2 (Github, Linkedin, Portfolio, ...)"
+                                    name="link2"
+                                    type="text"
+                                    placeholder="Enter your url"
+                                    value={personalInfo.links?.[1] || ""}
+                                    onChange={(e) => updateLink(1, e.target.value)}
+                                />
+                                <TextInput
+                                    label="Link 3 (Github, Linkedin, Portfolio, ...)"
+                                    name="link3"
+                                    type="text"
+                                    placeholder="Enter your url"
+                                    value={personalInfo.links?.[2] || ""}
+                                    onChange={(e) => updateLink(2, e.target.value)}
+                                />
+                            </GridInputsContainer>
                         </div>
-                    </SortableContext>
-                </DndContext>
+
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={sectionSortableIds} strategy={verticalListSortingStrategy}>
+                                <div className="flex flex-col gap-12">
+                                    {sectionOrder.map((sectionId) => (
+                                        <SortableEditorSection key={sectionId} id={`section:${sectionId}`}>
+                                            {renderOrderedSection(sectionId)}
+                                        </SortableEditorSection>
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                    </>
+                ) : (
+                    <Templates />
+                )}
             </div>
 
             <div
@@ -931,7 +938,6 @@ function CvPageContent() {
                     className={`relative flex min-h-0 flex-1 flex-col overflow-hidden ${!isLargeScreen ? "pt-14" : ""}`}
                 >
                     <CvPdfPreview
-                        className="min-h-0 flex-1"
                         blobUrl={previewBlobUrl}
                         loading={previewLoading}
                         error={previewError}

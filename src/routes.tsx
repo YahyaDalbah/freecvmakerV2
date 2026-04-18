@@ -16,7 +16,7 @@ export const routes: RouteObject[] = [
       {
         path: "/",
         element: <CvPage />,
-        handle: { showGeneratePdfButton: true } satisfies AppRouteHandle,
+        handle: { showGeneratePdfButton: true, showCvEditorTabs: true } satisfies AppRouteHandle,
       },
       {
         path: "*",

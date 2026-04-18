@@ -1,16 +1,26 @@
 import { Link, useNavigate, useMatches } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import Button from "../ui/buttons/Button";
-import { matchShowsGeneratePdfButton } from "../layoutContext";
+import Tabs from "../ui/tabs/Tabs";
+import {
+    matchShowsGeneratePdfButton,
+    matchShowCvEditorTabs,
+    type CvEditorTab,
+} from "../layoutContext";
 
 export default function Navbar({
     cvGeneratePdfHandler,
+    cvEditorTab,
+    setCvEditorTab,
 }: {
     cvGeneratePdfHandler: (() => Promise<void>) | null;
+    cvEditorTab: CvEditorTab;
+    setCvEditorTab: (tab: CvEditorTab) => void;
 }) {
     const navigate = useNavigate();
     const matches = useMatches();
     const showGeneratePdfButton = matchShowsGeneratePdfButton(matches);
+    const showCvEditorTabs = matchShowCvEditorTabs(matches);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
@@ -66,15 +76,24 @@ export default function Navbar({
     }
 
     return (
-        <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-3 z-50 shadow-sm">
-            <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
-                {/* Logo/Brand */}
-                <Link to="/" className="text-xl font-bold text-gray-800 hover:text-blue-600 transition">
+        <nav className="fixed left-0 right-0 top-0 z-50 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+            <div className="flex justify-between flex-wrap gap-x-4 gap-y-3">
+                <Link to="/" className="text-xl font-bold text-gray-800 transition hover:text-blue-600">
                     FreeCVMaker
                 </Link>
 
-                {/* User Section */}
-                <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+                {showCvEditorTabs && (
+                    <Tabs
+                        value={cvEditorTab}
+                        onChange={setCvEditorTab}
+                        tabs={[
+                            { value: "editing", label: "Editing" },
+                            { value: "templates", label: "Templates" },
+                        ]}
+                    />
+                )}
+
+                <div className="flex shrink-0 gap-x-4 gap-y-2">
                     {isLoggedIn ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
