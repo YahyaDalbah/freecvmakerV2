@@ -53,8 +53,7 @@ function Cv1({
                                                 {exp.company && <span> | {exp.company}</span>}
                                             </div>
                                             <div className="whitespace-nowrap">
-                                                {exp.startDate}
-                                                {exp.endDate ? ` – ${exp.endDate}` : ""}
+                                                {[exp.startDate, exp.endDate].filter(Boolean).join(" – ")}
                                             </div>
                                         </div>
                                         <div className="mt-0.5">{exp.city}</div>
@@ -82,8 +81,7 @@ function Cv1({
                                                 {edu.fieldOfStudy && <span> in {edu.fieldOfStudy}</span>}
                                             </div>
                                             <div>
-                                                {edu.startDate}
-                                                {edu.endDate ? ` – ${edu.endDate}` : ""}
+                                                {[edu.startDate, edu.endDate].filter(Boolean).join(" – ")}
                                             </div>
                                         </div>
                                         {edu.description && (

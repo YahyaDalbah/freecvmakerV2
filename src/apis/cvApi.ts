@@ -32,6 +32,7 @@ export function normalizeSectionOrder(order: string[] | undefined | null): CvSec
 export interface CvData {
   personalInfo: PersonalInfo;
   professionalSummary?: string;
+  templateId?: string;
   sectionOrder?: CvSectionId[];
   experience: Experience[];
   education: Education[];

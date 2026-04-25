@@ -135,6 +135,7 @@ function CvPageContent() {
     });
 
     const [professionalSummary, setProfessionalSummary] = useState("");
+    const [templateId, setTemplateId] = useState(DEFAULT_CV_TEMPLATE_ID);
     const [sectionOrder, setSectionOrder] = useState<CvSectionId[]>(() => normalizeSectionOrder(null));
     const [experience, setExperience] = useState<Experience[]>([]);
     const [education, setEducation] = useState<Education[]>([]);
@@ -231,6 +232,7 @@ function CvPageContent() {
                         links: data.personalInfo?.links || ["", "", ""],
                     });
                     setProfessionalSummary(data.professionalSummary || "");
+                    setTemplateId(data.templateId || DEFAULT_CV_TEMPLATE_ID);
                     setSectionOrder(normalizeSectionOrder(data.sectionOrder));
                     setExperience(data.experience || []);
                     setEducation(data.education || []);
@@ -263,6 +265,7 @@ function CvPageContent() {
             const cvData: CvData = {
                 personalInfo,
                 professionalSummary,
+                templateId,
                 sectionOrder,
                 experience,
                 education,
@@ -285,6 +288,7 @@ function CvPageContent() {
     }, [
         personalInfo,
         professionalSummary,
+        templateId,
         sectionOrder,
         experience,
         education,
@@ -313,7 +317,7 @@ function CvPageContent() {
                 clearTimeout(saveTimeoutRef.current);
             }
         };
-    }, [personalInfo, professionalSummary, sectionOrder, experience, education, skills, projects, references, saveCvData]);
+    }, [personalInfo, professionalSummary, templateId, sectionOrder, experience, education, skills, projects, references, saveCvData]);
 
     const updatePersonalInfo = useCallback((field: keyof typeof personalInfo, value: string | string[]) => {
         setPersonalInfo((prev) => ({ ...prev, [field]: value }));
@@ -415,7 +419,7 @@ function CvPageContent() {
 
     const pdfPayload = useMemo(
         () => ({
-            template: DEFAULT_CV_TEMPLATE_ID,
+            template: templateId,
             personalInfo,
             professionalSummary,
             sectionOrder,
@@ -425,7 +429,7 @@ function CvPageContent() {
             skills,
             references,
         }),
-        [personalInfo, professionalSummary, sectionOrder, experience, education, projects, skills, references]
+        [personalInfo, professionalSummary, templateId, sectionOrder, experience, education, projects, skills, references]
     );
 
     useEffect(() => {
@@ -923,7 +927,7 @@ function CvPageContent() {
                         </DndContext>
                     </>
                 ) : (
-                    <Templates />
+                    <Templates selectedTemplateId={templateId} onSelect={setTemplateId} />
                 )}
             </div>
 
