@@ -100,7 +100,7 @@ export default function Navbar({
                                 onClick={() => setShowDropdown(!showDropdown)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
                             >
-                                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                <div className="w-6 h-6 bg-blue-600 text-sm rounded-full flex items-center justify-center text-white font-semibold">
                                     {userEmail ? userEmail[0].toUpperCase() : 'U'}
                                 </div>
                                 <span className="hidden sm:block text-sm font-medium text-gray-700">

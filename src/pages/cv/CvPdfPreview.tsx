@@ -26,7 +26,8 @@ export default function CvPdfPreview({
 
     return (
         <div
-            className={`relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-sm bg-gray-800 ring-1 ring-black/10 ${className}`}
+            className={`relative flex min-h-0 flex-1 left-1/2 -translate-x-1/2 flex-col overflow-hidden rounded-sm bg-gray-800 ring-1 ring-black/10 ${className}`}
+            style={{maxWidth: '630px'}}
             aria-busy={loading || cvDataLoading}
         >
             {error ? (

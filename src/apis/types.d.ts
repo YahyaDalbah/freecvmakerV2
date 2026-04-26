@@ -26,6 +26,7 @@ export type Project = {
 export type Skill = {
     id: string;
     description?: string;
+    level?: number;
 }
 export type Reference = {
     id: string;

@@ -4,6 +4,7 @@ import type { CvSectionId } from "../../apis/cvApi";
 /** Props every CV template must accept — same shape POSTed to /api/generate-cv and stored for /print. */
 export type CvTemplateProps = {
     variant?: "print" | "embedded";
+    color?: string;
     personalInfo: PersonalInfo;
     professionalSummary?: string;
     sectionOrder?: CvSectionId[];

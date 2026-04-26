@@ -3,6 +3,7 @@ import GridInputsContainer from "../../ui/cv-editing-section/GridInputsContainer
 import SectionTitle from "../../ui/cv-editing-section/SectionTitle";
 import TextAreaInput from "../../ui/cv-editing-section/inputs/TextAreaInput";
 import TextInput from "../../ui/cv-editing-section/inputs/TextInput";
+import SelectInput from "../../ui/cv-editing-section/inputs/SelectInput";
 import type { Education, Experience, Project, Skill, Reference } from "../../apis/types";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
@@ -13,6 +14,7 @@ import CvPdfPreview from "./CvPdfPreview";
 import Templates from "./Templates";
 import { CV_PDF_PREVIEW_DEBOUNCE_MS, fetchCvPdfBlob } from "../../apis/cvPdfApi";
 import { DEFAULT_CV_TEMPLATE_ID } from "./cvTemplates";
+import { COLOR_PRESETS } from "./Templates";
 import { saveAs } from "file-saver";
 import { AutoSaveProvider, useAutoSave } from "../../contexts/AutoSaveContext";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -136,6 +138,7 @@ function CvPageContent() {
 
     const [professionalSummary, setProfessionalSummary] = useState("");
     const [templateId, setTemplateId] = useState(DEFAULT_CV_TEMPLATE_ID);
+    const [color, setColor] = useState(COLOR_PRESETS[0]);
     const [sectionOrder, setSectionOrder] = useState<CvSectionId[]>(() => normalizeSectionOrder(null));
     const [experience, setExperience] = useState<Experience[]>([]);
     const [education, setEducation] = useState<Education[]>([]);
@@ -233,6 +236,7 @@ function CvPageContent() {
                     });
                     setProfessionalSummary(data.professionalSummary || "");
                     setTemplateId(data.templateId || DEFAULT_CV_TEMPLATE_ID);
+                    setColor(data.color || COLOR_PRESETS[0]);
                     setSectionOrder(normalizeSectionOrder(data.sectionOrder));
                     setExperience(data.experience || []);
                     setEducation(data.education || []);
@@ -266,6 +270,7 @@ function CvPageContent() {
                 personalInfo,
                 professionalSummary,
                 templateId,
+                color,
                 sectionOrder,
                 experience,
                 education,
@@ -289,6 +294,7 @@ function CvPageContent() {
         personalInfo,
         professionalSummary,
         templateId,
+        color,
         sectionOrder,
         experience,
         education,
@@ -317,7 +323,7 @@ function CvPageContent() {
                 clearTimeout(saveTimeoutRef.current);
             }
         };
-    }, [personalInfo, professionalSummary, templateId, sectionOrder, experience, education, skills, projects, references, saveCvData]);
+    }, [personalInfo, professionalSummary, templateId, color, sectionOrder, experience, education, skills, projects, references, saveCvData]);
 
     const updatePersonalInfo = useCallback((field: keyof typeof personalInfo, value: string | string[]) => {
         setPersonalInfo((prev) => ({ ...prev, [field]: value }));
@@ -341,6 +347,10 @@ function CvPageContent() {
 
     const updateSkills = useCallback((id: string, value: string) => {
         setSkills((prev) => prev.map((item) => (item.id === id ? { ...item, description: value } : item)));
+    }, []);
+
+    const updateSkillLevel = useCallback((id: string, level: number) => {
+        setSkills((prev) => prev.map((item) => (item.id === id ? { ...item, level } : item)));
     }, []);
 
     const updateProject = useCallback((id: string, field: keyof Project, value: string | string[]) => {
@@ -391,7 +401,7 @@ function CvPageContent() {
     }, []);
 
     const addSkill = useCallback(() => {
-        setSkills((prev) => [...prev, { id: generateId(), description: "" }]);
+        setSkills((prev) => [...prev, { id: generateId(), description: "", level: 3 }]);
     }, []);
 
     const deleteSkill = useCallback((id: string) => {
@@ -420,6 +430,7 @@ function CvPageContent() {
     const pdfPayload = useMemo(
         () => ({
             template: templateId,
+            color,
             personalInfo,
             professionalSummary,
             sectionOrder,
@@ -429,7 +440,7 @@ function CvPageContent() {
             skills,
             references,
         }),
-        [personalInfo, professionalSummary, templateId, sectionOrder, experience, education, projects, skills, references]
+        [personalInfo, professionalSummary, templateId, color, sectionOrder, experience, education, projects, skills, references]
     );
 
     useEffect(() => {
@@ -734,11 +745,19 @@ function CvPageContent() {
                                             <GridInputsContainer>
                                                 <TextInput
                                                     name="skillsDescription"
-                                                    label="Skills"
+                                                    label="Skill"
                                                     type="text"
-                                                    placeholder="Enter related skills"
+                                                    placeholder="Enter skill name"
                                                     value={skill.description}
                                                     onChange={(e) => updateSkills(skill.id, e.target.value)}
+                                                />
+                                                <SelectInput
+                                                    name="skillLevel"
+                                                    label="Level (1–5)"
+                                                    value={skill.level ?? 3}
+                                                    onChange={(val) => updateSkillLevel(skill.id, val)}
+                                                    min={1}
+                                                    max={5}
                                                 />
                                             </GridInputsContainer>
                                         </DropdownMenu>
@@ -927,7 +946,12 @@ function CvPageContent() {
                         </DndContext>
                     </>
                 ) : (
-                    <Templates selectedTemplateId={templateId} onSelect={setTemplateId} />
+                    <Templates
+                        selectedTemplateId={templateId}
+                        onSelect={setTemplateId}
+                        selectedColor={color}
+                        onColorChange={setColor}
+                    />
                 )}
             </div>
 

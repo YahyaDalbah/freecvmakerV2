@@ -1,10 +1,13 @@
 import type { ComponentType } from "react";
 import Cv1 from "./cvs/Cv1";
+import Cv2 from "./cvs/Cv2";
 import type { CvTemplateProps } from "./cvTemplateTypes";
 import cv1Img from "../../assets/cv1.png";
+import cv2Img from "../../assets/cv2.png";
 
 export const CV_TEMPLATES: Record<string, ComponentType<CvTemplateProps>> = {
     cv1: Cv1,
+    cv2: Cv2,
 };
 
 export interface CvTemplateMeta {
@@ -15,6 +18,7 @@ export interface CvTemplateMeta {
 
 export const CV_TEMPLATE_META: CvTemplateMeta[] = [
     { id: "cv1", label: "Classic", image: cv1Img },
+    { id: "cv2", label: "Sidebar", image: cv2Img },
 ];
 
 export const DEFAULT_CV_TEMPLATE_ID = "cv1";

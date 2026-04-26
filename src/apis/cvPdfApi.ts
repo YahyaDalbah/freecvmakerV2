@@ -10,6 +10,7 @@ export function getCvApiBaseUrl(): string {
 /** Body shape for `POST /api/generate-cv` — must match what Puppeteer seeds into `/print`. */
 export type CvPdfPayload = {
     template: string;
+    color?: string;
     personalInfo: PersonalInfo;
     professionalSummary: string;
     sectionOrder: string[];

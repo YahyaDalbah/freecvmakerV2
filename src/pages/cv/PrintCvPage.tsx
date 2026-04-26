@@ -15,6 +15,7 @@ function decodeCvData(encodedData: string) {
 
 type StoredPayload = {
     template?: string;
+    color?: string;
     personalInfo: PersonalInfo;
     professionalSummary?: string;
     sectionOrder?: string[];
@@ -70,6 +71,7 @@ export default function PrintCvPage() {
         <div className="min-h-screen bg-white print:bg-white">
             <Template
                 variant="print"
+                color={data.color}
                 personalInfo={data.personalInfo}
                 professionalSummary={data.professionalSummary}
                 sectionOrder={sectionOrder}

@@ -33,6 +33,7 @@ export interface CvData {
   personalInfo: PersonalInfo;
   professionalSummary?: string;
   templateId?: string;
+  color?: string;
   sectionOrder?: CvSectionId[];
   experience: Experience[];
   education: Education[];
