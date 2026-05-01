@@ -21,14 +21,6 @@
     line-height: 1.15rem;
 }
 
-@media print {
-    .cv-avoid-break,
-    .cv-entry-avoid-break {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-}
-
 /* Ensure markdown lists render with bullets across Tailwind preflight resets */
 .markdown-content ul {
     list-style-type: disc;

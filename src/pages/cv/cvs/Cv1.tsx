@@ -33,7 +33,7 @@ function Cv1({
             case "professionalSummary":
                 return (
                     professionalSummary?.trim() && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="Professional Summary" />
                             <MarkdownRender content={professionalSummary} />
                         </section>
@@ -42,11 +42,11 @@ function Cv1({
             case "experience":
                 return (
                     validExperience.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="Experience" />
                             <SectionListContainer>
                                 {validExperience.map((exp) => (
-                                    <div key={exp.id} className="cv-entry-avoid-break">
+                                    <div key={exp.id}>
                                         <div className="flex justify-between">
                                             <div>
                                                 <span className="font-bold">{exp.jobTitle}</span>
@@ -69,11 +69,11 @@ function Cv1({
             case "education":
                 return (
                     validEducation.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="Education" />
                             <SectionListContainer>
                                 {validEducation.map((edu) => (
-                                    <div key={edu.id} className="cv-entry-avoid-break">
+                                    <div key={edu.id}>
                                         <div className="flex justify-between">
                                             <div>
                                                 <span className="font-bold">{edu.school}</span>
@@ -96,11 +96,11 @@ function Cv1({
             case "projects":
                 return (
                     validProjects.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="Projects" />
                             <SectionListContainer>
                                 {validProjects.map((proj) => (
-                                    <div key={proj.id} className="cv-entry-avoid-break">
+                                    <div key={proj.id}>
                                         <div className="font-bold">{`${proj.name} ${
                                             proj.technologies && proj.technologies.length > 0
                                                 ? `(${proj.technologies.join(", ")})`
@@ -118,7 +118,7 @@ function Cv1({
             case "skills":
                 return (
                     validSkills.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="Skills" />
                             <ul className="list-disc pl-5">
                                 {validSkills.map((skill) => (
@@ -131,11 +131,11 @@ function Cv1({
             case "references":
                 return (
                     validReferences.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <SectionTitle title="References" />
                             <SectionListContainer>
                                 {validReferences.map((ref) => (
-                                    <div key={ref.id} className="cv-entry-avoid-break">
+                                    <div key={ref.id}>
                                         <div className="flex justify-between">
                                             <div>
                                                 <span className="font-bold">{ref.name}</span>
@@ -166,7 +166,7 @@ function Cv1({
 
     return (
         <div className={rootClass} style={{ paddingTop: "0.3in", paddingBottom: "0.3in" }}>
-            <header className="text-center mb-4 cv-avoid-break">
+            <header className="text-center mb-4">
                 <h1 className="font-bold tracking-tight text-4xl">{fullName}</h1>
                 <p className="text-gray-600 font-bold text-xl">{jobTitle}</p>
                 <div className="text-[16px]">

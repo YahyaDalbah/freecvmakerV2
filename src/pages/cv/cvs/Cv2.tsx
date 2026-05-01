@@ -68,7 +68,7 @@ function Cv2({
             case "professionalSummary":
                 return (
                     professionalSummary?.trim() && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <RightSectionHeading title="Profile" />
                             <MarkdownRender content={professionalSummary} />
                         </section>
@@ -77,11 +77,11 @@ function Cv2({
             case "experience":
                 return (
                     validExperience.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <RightSectionHeading title="Employment History" />
                             <div className="space-y-4">
                                 {validExperience.map((exp) => (
-                                    <div key={exp.id} className="cv-entry-avoid-break">
+                                    <div key={exp.id}>
                                         <div className="font-bold text-[15px]">
                                             {[exp.jobTitle, exp.company].filter(Boolean).join(", ")}
                                         </div>
@@ -98,11 +98,11 @@ function Cv2({
             case "education":
                 return (
                     validEducation.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <RightSectionHeading title="Education" />
                             <div className="space-y-4">
                                 {validEducation.map((edu) => (
-                                    <div key={edu.id} className="cv-entry-avoid-break">
+                                    <div key={edu.id}>
                                         <div className="font-bold text-[15px]">
                                             {[
                                                 edu.degree && edu.fieldOfStudy
@@ -126,11 +126,11 @@ function Cv2({
             case "projects":
                 return (
                     validProjects.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <RightSectionHeading title="Projects" />
                             <div className="space-y-4">
                                 {validProjects.map((proj) => (
-                                    <div key={proj.id} className="cv-entry-avoid-break">
+                                    <div key={proj.id}>
                                         <div className="font-bold text-[15px]">
                                             {proj.name}
                                             {proj.technologies && proj.technologies.length > 0
@@ -149,11 +149,11 @@ function Cv2({
             case "references":
                 return (
                     validReferences.length > 0 && (
-                        <section className="cv-avoid-break">
+                        <section>
                             <RightSectionHeading title="References" />
                             <div className="space-y-4">
                                 {validReferences.map((ref) => (
-                                    <div key={ref.id} className="cv-entry-avoid-break">
+                                    <div key={ref.id}>
                                         <div className="font-bold text-[15px]">
                                             {[ref.name, ref.company].filter(Boolean).join(" | ")}
                                         </div>

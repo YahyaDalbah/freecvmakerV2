@@ -24,9 +24,11 @@ export default function MarkdownRender({ content, className = "" }: MarkdownRend
           groups.push(currentListGroup.join('\n'));
           currentListGroup = [];
         }
-        // Add non-list line
+        // Non-list: keep each text line; preserve blank lines as vertical space (page breaks / spacing)
         if (line.trim()) {
           groups.push(line);
+        } else {
+          groups.push("");
         }
       }
     });
@@ -45,9 +47,13 @@ export default function MarkdownRender({ content, className = "" }: MarkdownRend
     <div className={`[&_p]:m-0 [&_p]:inline [&_ul]:m-0 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:m-0 [&_ol]:pl-5 [&_ol]:list-decimal ${className}`}>
       {contentGroups.map((group, index) => (
         <span key={index} className="block">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {group}
-          </ReactMarkdown>
+          {group === "" ? (
+            <span className="block h-[1em] min-h-[1em] w-full shrink-0" aria-hidden />
+          ) : (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {group}
+            </ReactMarkdown>
+          )}
         </span>
       ))}
     </div>
