@@ -26,6 +26,7 @@ export type Project = {
 export type Skill = {
     id: string;
     description?: string;
+    level?: number;
 }
 export type Reference = {
     id: string;
@@ -36,7 +37,8 @@ export type Reference = {
     description?: string;
 }
 export type PersonalInfo = {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     phone?: string;
     jobTitle?: string;
