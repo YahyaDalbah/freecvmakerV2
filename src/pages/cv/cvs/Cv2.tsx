@@ -85,7 +85,7 @@ function Cv2({
                     professionalSummary?.trim() && (
                         <section>
                             <RightSectionHeading title="Profile" />
-                            <MarkdownRender content={professionalSummary} />
+                            <MarkdownRender content={professionalSummary} idPrefix="summary" />
                         </section>
                     )
                 );
@@ -102,7 +102,7 @@ function Cv2({
                                         </div>
                                         <DateRange start={exp.startDate} end={exp.endDate} />
                                         {exp.description && (
-                                            <MarkdownRender content={exp.description} className="mt-1" />
+                                            <MarkdownRender content={exp.description} className="mt-1" idPrefix={exp.id} />
                                         )}
                                     </div>
                                 ))}
@@ -130,7 +130,7 @@ function Cv2({
                                         </div>
                                         <DateRange start={edu.startDate} end={edu.endDate} />
                                         {edu.description && (
-                                            <MarkdownRender content={edu.description} className="mt-1" />
+                                            <MarkdownRender content={edu.description} className="mt-1" idPrefix={edu.id} />
                                         )}
                                     </div>
                                 ))}
@@ -153,7 +153,7 @@ function Cv2({
                                                 : ""}
                                         </div>
                                         {proj.description && (
-                                            <MarkdownRender content={proj.description} className="mt-1" />
+                                            <MarkdownRender content={proj.description} className="mt-1" idPrefix={proj.id} />
                                         )}
                                     </div>
                                 ))}
@@ -182,7 +182,7 @@ function Cv2({
                                             {ref.phone}
                                         </div>
                                         {ref.description && (
-                                            <MarkdownRender content={ref.description} className="mt-1" />
+                                            <MarkdownRender content={ref.description} className="mt-1" idPrefix={ref.id} />
                                         )}
                                     </div>
                                 ))}
