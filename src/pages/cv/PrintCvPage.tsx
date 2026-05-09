@@ -68,7 +68,7 @@ export default function PrintCvPage() {
     const sectionOrder = normalizeSectionOrder(data.sectionOrder);
 
     return (
-        <div className="min-h-screen bg-white print:bg-white">
+        <div className="bg-white print:bg-white">
             <Template
                 variant="print"
                 color={data.color}

@@ -2,10 +2,6 @@
 .date-input {
     @apply grid grid-cols-2 gap-x-6 items-end;
 }
-/*
- * Printable box = A4 minus Puppeteer page.pdf margins only (see cvPrint.ts + cvmaker-backend app.js).
- * Do not add extra padding here — inset comes from PDF margins alone.
- */
 .cv-print-root {
     width: calc(210mm - 2 * 0.3in);
     max-width: 100%;

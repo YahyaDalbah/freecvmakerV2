@@ -1,8 +1,9 @@
 import MarkdownRender from "../../../ui/cv-sections/MarkdownRender";
-import { memo, useMemo, Fragment } from "react";
+import { memo, useMemo, Fragment, useRef, useLayoutEffect, useState } from "react";
 import { isAnyFieldFilled } from "../../../utils/cv.utils";
 import { normalizeSectionOrder, type CvSectionId } from "../../../apis/cvApi";
 import type { CvTemplateProps } from "../cvTemplateTypes";
+import { PAGE_H } from "../cvDimensions";
 
 const DEFAULT_COLOR = "#1f0a14";
 const ACCENT = "#c8a46a";
@@ -51,6 +52,20 @@ function Cv2({
     const validProjects = useMemo(() => projects.filter(isAnyFieldFilled), [projects]);
     const validSkills = useMemo(() => skills.filter(isAnyFieldFilled), [skills]);
     const validReferences = useMemo(() => references.filter(isAnyFieldFilled), [references]);
+
+    const rowRef = useRef<HTMLDivElement>(null);
+    const [minH, setMinH] = useState(0);
+
+    // Round the flex row's height up to the nearest A4-page boundary so the sidebar
+    // background fills every page. Subtracts 0.5 before dividing to absorb browser's
+    // integer rounding of PAGE_H, preventing a cascading page-count inflation loop.
+    useLayoutEffect(() => {
+        const el = rowRef.current;
+        if (!el) return;
+        const h = el.scrollHeight;
+        const rounded = Math.max(1, Math.ceil((h - 0.5) / PAGE_H)) * PAGE_H;
+        if (rounded !== minH) setMinH(rounded);
+    });
 
     const { firstName, lastName, email, phone, links, city } = personalInfo;
     const fullName = [firstName, lastName].filter(Boolean).join(" ");
@@ -186,8 +201,9 @@ function Cv2({
             style={{ marginLeft: 0, marginRight: 0, width: "100%", maxWidth: "100%" }}
         >
             <div
+                ref={rowRef}
                 className="flex flex-row items-stretch text-[15px] leading-[1.3]"
-                style={{ minHeight: "297mm" }}
+                style={{ minHeight: minH || PAGE_H }}
             >
                 {/* Sidebar */}
                 <div

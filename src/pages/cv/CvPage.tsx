@@ -10,9 +10,9 @@ import { useOutletContext } from "react-router-dom";
 import Button from "../../ui/buttons/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPenToSquare, faFileLines, faGripVertical } from "@fortawesome/free-solid-svg-icons";
-import CvPdfPreview from "./CvPdfPreview";
+import CvLivePreview from "./CvLivePreview";
 import Templates from "./Templates";
-import { CV_PDF_PREVIEW_DEBOUNCE_MS, fetchCvPdfBlob } from "../../apis/cvPdfApi";
+import { fetchCvPdfBlob } from "../../apis/cvPdfApi";
 import { DEFAULT_CV_TEMPLATE_ID } from "./cvTemplates";
 import { COLOR_PRESETS } from "./Templates";
 import { saveAs } from "file-saver";
@@ -149,11 +149,6 @@ function CvPageContent() {
     const dataLoadedRef = useRef(false);
     const saveTimeoutRef = useRef<number | null>(null);
     const isFirstLoadRef = useRef(true);
-    const previewBlobRef = useRef<string | null>(null);
-
-    const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
-    const [previewLoading, setPreviewLoading] = useState(false);
-    const [previewError, setPreviewError] = useState<string | null>(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -443,50 +438,6 @@ function CvPageContent() {
         [personalInfo, professionalSummary, templateId, color, sectionOrder, experience, education, projects, skills, references]
     );
 
-    useEffect(() => {
-        previewBlobRef.current = previewBlobUrl;
-    }, [previewBlobUrl]);
-
-    useEffect(() => {
-        return () => {
-            const u = previewBlobRef.current;
-            if (u) URL.revokeObjectURL(u);
-        };
-    }, []);
-
-    /** Same PDF as download; runs while CV data is ready. Does not depend on mobile preview visibility so toggling does not revoke the blob / reset the iframe. */
-    useEffect(() => {
-        if (isLoading) {
-            return undefined;
-        }
-
-        setPreviewLoading(true);
-        setPreviewError(null);
-        const ac = new AbortController();
-        const timer = window.setTimeout(() => {
-            void (async () => {
-                try {
-                    const blob = await fetchCvPdfBlob(pdfPayload, { signal: ac.signal });
-                    if (ac.signal.aborted) return;
-                    const next = URL.createObjectURL(blob);
-                    setPreviewBlobUrl((prev) => {
-                        if (prev) URL.revokeObjectURL(prev);
-                        return next;
-                    });
-                } catch (err) {
-                    if (ac.signal.aborted) return;
-                    setPreviewError(err instanceof Error ? err.message : "Preview failed");
-                } finally {
-                    if (!ac.signal.aborted) setPreviewLoading(false);
-                }
-            })();
-        }, CV_PDF_PREVIEW_DEBOUNCE_MS);
-
-        return () => {
-            window.clearTimeout(timer);
-            ac.abort();
-        };
-    }, [isLoading, pdfPayload]);
 
     const handleGeneratePdf = useCallback(async () => {
         try {
@@ -963,14 +914,28 @@ function CvPageContent() {
                 aria-hidden={!isLargeScreen && !showCvOnSmall}
             >
                 <div
-                    className={`relative flex min-h-0 flex-1 flex-col overflow-hidden ${!isLargeScreen ? "pt-14" : ""}`}
+                    className={`relative min-h-0 flex-1 overflow-y-auto ${!isLargeScreen ? "pt-14" : ""}`}
                 >
-                    <CvPdfPreview
-                        blobUrl={previewBlobUrl}
-                        loading={previewLoading}
-                        error={previewError}
-                        cvDataLoading={isLoading}
-                    />
+                    {isLoading ? (
+                        <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                            Loading CV data…
+                        </div>
+                    ) : (
+                        <div className="p-3">
+                            <CvLivePreview
+                                templateId={templateId}
+                                color={color}
+                                personalInfo={personalInfo}
+                                professionalSummary={professionalSummary}
+                                sectionOrder={sectionOrder}
+                                experience={experience}
+                                education={education}
+                                projects={projects}
+                                skills={skills}
+                                references={references}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 

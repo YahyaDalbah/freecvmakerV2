@@ -165,7 +165,7 @@ function Cv1({
     const rootClass = variant === "print" ? "cv-print-surface cv-print-root" : "cv-print-surface cv-print-root";
 
     return (
-        <div className={rootClass} style={{ paddingTop: "0.3in", paddingBottom: "0.3in" }}>
+        <div className={rootClass}>
             <header className="text-center mb-4">
                 <h1 className="font-bold tracking-tight text-4xl">{fullName}</h1>
                 <p className="text-gray-600 font-bold text-xl">{jobTitle}</p>
