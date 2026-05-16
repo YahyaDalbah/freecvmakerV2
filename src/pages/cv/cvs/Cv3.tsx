@@ -4,7 +4,7 @@ import { isAnyFieldFilled } from "../../../utils/cv.utils";
 import { normalizeSectionOrder, type CvSectionId } from "../../../apis/cvApi";
 import type { CvTemplateProps } from "../cvTemplateTypes";
 
-const L = "w-[27%] flex-shrink-0 pr-6";
+const L = "w-[27%] whitespace-nowrap flex-shrink-0 pr-6";
 const R = "flex-1 min-w-0";
 
 function SectionLabel({ text }: { text: string }) {
