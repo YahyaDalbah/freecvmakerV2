@@ -60,7 +60,7 @@ function Cv3({
                         <hr />
                         <div className="flex pt-3 gap-0">
                             <div className={L}><SectionLabel text="Profile" /></div>
-                            <div className={`${R} text-[13px] text-gray-700 leading-relaxed`}>
+                            <div className={`${R} text-[13px] leading-relaxed`}>
                                 <MarkdownRender content={professionalSummary} idPrefix="summary" />
                             </div>
                         </div>
@@ -88,7 +88,7 @@ function Cv3({
                                         <p className="text-[12px] text-gray-500 mt-0.5">{exp.city}</p>
                                     )}
                                     {exp.description && (
-                                        <MarkdownRender content={exp.description} className="mt-1 text-[13px] text-gray-700" idPrefix={exp.id} />
+                                        <MarkdownRender content={exp.description} className="mt-1 text-[13px]" idPrefix={exp.id} />
                                     )}
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ function Cv3({
                                         ].filter(Boolean).join(", ")}
                                     </p>
                                     {edu.description && (
-                                        <MarkdownRender content={edu.description} className="mt-1 text-[13px] text-gray-600" idPrefix={edu.id} />
+                                        <MarkdownRender content={edu.description} className="mt-1 text-[13px]" idPrefix={edu.id} />
                                     )}
                                 </div>
                             </div>
@@ -144,7 +144,7 @@ function Cv3({
                                         {proj.technologies?.length ? ` (${proj.technologies.join(", ")})` : ""}
                                     </p>
                                     {proj.description && (
-                                        <MarkdownRender content={proj.description} className="mt-1 text-[13px] text-gray-700" idPrefix={proj.id} />
+                                        <MarkdownRender content={proj.description} className="mt-1 text-[13px]" idPrefix={proj.id} />
                                     )}
                                 </div>
                             </div>
@@ -165,7 +165,7 @@ function Cv3({
                                             <span className="font-medium">
                                                 {skill.description}
                                             </span>
-                                            <span className="text-gray-500 ml-2 whitespace-nowrap text-right">
+                                            <span className="ml-2 whitespace-nowrap text-right">
                                                 {levelLabel(skill.level)}
                                             </span>
                                         </div>
@@ -191,7 +191,7 @@ function Cv3({
                                     <p className="font-bold text-[14px] leading-snug">
                                         {[ref.name, ref.company].filter(Boolean).join(" | ")}
                                     </p>
-                                    <p className="text-[13px] text-gray-600 mt-0.5">
+                                    <p className="text-[13px] mt-0.5">
                                         {ref.email && (
                                             <a className="underline" href={`mailto:${ref.email}`}>{ref.email}</a>
                                         )}
@@ -199,7 +199,7 @@ function Cv3({
                                         {ref.phone}
                                     </p>
                                     {ref.description && (
-                                        <MarkdownRender content={ref.description} className="mt-1 text-[13px] text-gray-700" idPrefix={ref.id} />
+                                        <MarkdownRender content={ref.description} className="mt-1 text-[13px]" idPrefix={ref.id} />
                                     )}
                                 </div>
                             </div>
@@ -221,7 +221,7 @@ function Cv3({
                     </h1>
                 )}
                 {contactParts.length > 0 && (
-                    <p className="text-[13px] text-gray-600 mt-1">
+                    <p className="text-[13px] mt-1">
                         {contactParts.map((part, i) => (
                             <Fragment key={i}>
                                 {i > 0 && <span>, </span>}
