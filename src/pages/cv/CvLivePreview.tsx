@@ -87,7 +87,7 @@ export default function CvLivePreview({ templateId, className = "", ...templateP
         const naturalH = el.scrollHeight;
         const totalPushSum = keysA.reduce((acc, k) => acc + newPushes[k], 0);
         const actualH = naturalH + totalPushSum;
-        const n = Math.max(1, Math.ceil((actualH - 0.5) / clipH));
+        const n = Math.max(1, Math.ceil((actualH - 1) / clipH));
         if (n !== numPages) setNumPages(n);
     });
 

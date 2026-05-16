@@ -4,7 +4,6 @@ import { isAnyFieldFilled } from "../../../utils/cv.utils";
 import { normalizeSectionOrder, type CvSectionId } from "../../../apis/cvApi";
 import type { CvTemplateProps } from "../cvTemplateTypes";
 
-const ACCENT = "#1a6b9a";
 const L = "w-[27%] flex-shrink-0 pr-6";
 const R = "flex-1 min-w-0";
 
@@ -82,7 +81,7 @@ function Cv3({
                                     <EntryDate start={exp.startDate} end={exp.endDate} />
                                 </div>
                                 <div className={R}>
-                                    <p className="font-bold text-[14px] leading-snug" style={{ color: ACCENT }}>
+                                    <p className="font-bold text-[14px] leading-snug">
                                         {[exp.jobTitle, exp.company].filter(Boolean).join(", ")}
                                     </p>
                                     {exp.city && (
@@ -111,7 +110,7 @@ function Cv3({
                                     <EntryDate start={edu.startDate} end={edu.endDate} />
                                 </div>
                                 <div className={R}>
-                                    <p className="font-bold text-[14px] leading-snug" style={{ color: ACCENT }}>
+                                    <p className="font-bold text-[14px] leading-snug">
                                         {[
                                             edu.degree && edu.fieldOfStudy
                                                 ? `${edu.degree} in ${edu.fieldOfStudy}`
@@ -140,7 +139,7 @@ function Cv3({
                             <div key={proj.id} className="flex mt-3">
                                 <div className={L} />
                                 <div className={R}>
-                                    <p className="font-bold text-[14px] leading-snug" style={{ color: ACCENT }}>
+                                    <p className="font-bold text-[14px] leading-snug">
                                         {proj.name}
                                         {proj.technologies?.length ? ` (${proj.technologies.join(", ")})` : ""}
                                     </p>
@@ -163,7 +162,7 @@ function Cv3({
                                 <div className="grid grid-cols-2 gap-x-8">
                                     {validSkills.map((skill) => (
                                         <div key={skill.id} className="flex justify-between items-baseline py-[3px] text-[13px]">
-                                            <span className="font-medium" style={{ color: ACCENT }}>
+                                            <span className="font-medium">
                                                 {skill.description}
                                             </span>
                                             <span className="text-gray-500 ml-2 whitespace-nowrap text-right">
@@ -189,7 +188,7 @@ function Cv3({
                             <div key={ref.id} className="flex mt-3">
                                 <div className={L} />
                                 <div className={R}>
-                                    <p className="font-bold text-[14px] leading-snug" style={{ color: ACCENT }}>
+                                    <p className="font-bold text-[14px] leading-snug">
                                         {[ref.name, ref.company].filter(Boolean).join(" | ")}
                                     </p>
                                     <p className="text-[13px] text-gray-600 mt-0.5">
@@ -214,7 +213,7 @@ function Cv3({
     };
 
     return (
-        <div className="cv-print-surface cv-print-root">
+        <div className="cv-print-surface cv-print-root" style={{ fontFamily: "'Merriweather', serif" }}>
             <header className="text-center mb-2">
                 {fullName && (
                     <h1 className="text-[22px] font-bold text-gray-900 tracking-tight leading-tight">

@@ -6,13 +6,12 @@ import type { CvTemplateProps } from "../cvTemplateTypes";
 import { PAGE_H } from "../cvDimensions";
 
 const DEFAULT_COLOR = "#1f0a14";
-const ACCENT = "#c8a46a";
 
 function DateRange({ start, end }: { start?: string; end?: string }) {
     const text = [start, end].filter(Boolean).join(" — ");
     if (!text) return null;
     return (
-        <div className="text-[13px] uppercase tracking-wide mt-0.5 text-gray-400">
+        <div className="text-[13px] uppercase tracking-wide mt-0.5 text-gray-500">
             {text}
         </div>
     );
@@ -28,7 +27,7 @@ function RightSectionHeading({ title }: { title: string }) {
 
 function SidebarHeading({ title }: { title: string }) {
     return (
-        <h2 className="font-bold text-[15px] mb-2" style={{ color: ACCENT }}>
+        <h2 className="font-bold text-[15px] mb-2">
             {title}
         </h2>
     );
@@ -57,13 +56,15 @@ function Cv2({
     const [minH, setMinH] = useState(0);
 
     // Round the flex row's height up to the nearest A4-page boundary so the sidebar
-    // background fills every page. Subtracts 0.5 before dividing to absorb browser's
-    // integer rounding of PAGE_H, preventing a cascading page-count inflation loop.
+    // background fills every page. Clears minHeight before measuring so flex-stretch
+    // doesn't inflate scrollHeight, then restores it — runs before paint so no flicker.
     useLayoutEffect(() => {
         const el = rowRef.current;
         if (!el) return;
+        el.style.minHeight = '0px';
         const h = el.scrollHeight;
-        const rounded = Math.max(1, Math.ceil((h - 0.5) / PAGE_H)) * PAGE_H;
+        el.style.minHeight = `${minH || PAGE_H}px`;
+        const rounded = Math.max(1, Math.ceil(h / PAGE_H)) * PAGE_H;
         if (rounded !== minH) setMinH(rounded);
     });
 
@@ -85,7 +86,7 @@ function Cv2({
                     professionalSummary?.trim() && (
                         <section>
                             <RightSectionHeading title="Profile" />
-                            <MarkdownRender content={professionalSummary} idPrefix="summary" />
+                            <MarkdownRender content={professionalSummary} />
                         </section>
                     )
                 );
@@ -102,7 +103,7 @@ function Cv2({
                                         </div>
                                         <DateRange start={exp.startDate} end={exp.endDate} />
                                         {exp.description && (
-                                            <MarkdownRender content={exp.description} className="mt-1" idPrefix={exp.id} />
+                                            <MarkdownRender content={exp.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -130,7 +131,7 @@ function Cv2({
                                         </div>
                                         <DateRange start={edu.startDate} end={edu.endDate} />
                                         {edu.description && (
-                                            <MarkdownRender content={edu.description} className="mt-1" idPrefix={edu.id} />
+                                            <MarkdownRender content={edu.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -153,7 +154,7 @@ function Cv2({
                                                 : ""}
                                         </div>
                                         {proj.description && (
-                                            <MarkdownRender content={proj.description} className="mt-1" idPrefix={proj.id} />
+                                            <MarkdownRender content={proj.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -182,7 +183,7 @@ function Cv2({
                                             {ref.phone}
                                         </div>
                                         {ref.description && (
-                                            <MarkdownRender content={ref.description} className="mt-1" idPrefix={ref.id} />
+                                            <MarkdownRender content={ref.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -198,7 +199,7 @@ function Cv2({
     return (
         <div
             className="cv-print-surface cv-print-root"
-            style={{ marginLeft: 0, marginRight: 0, width: "100%", maxWidth: "100%" }}
+            style={{ marginLeft: 0, marginRight: 0, width: "100%", maxWidth: "100%", fontFamily: "'Inter', sans-serif" }}
         >
             <div
                 ref={rowRef}
@@ -261,8 +262,8 @@ function Cv2({
                                             <div>{skill.description}</div>
                                             <div className="mt-1 h-[3px] w-full rounded-full bg-white/20">
                                                 <div
-                                                    className="h-full rounded-full"
-                                                    style={{ width: `${pct}%`, backgroundColor: ACCENT }}
+                                                    className="h-full rounded-full bg-white"
+                                                    style={{ width: `${pct}%` }}
                                                 />
                                             </div>
                                         </div>
