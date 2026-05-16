@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap');
+
 .date-input {
     @apply grid grid-cols-2 gap-x-6 items-end;
 }
+
+/* ── CV template surface ─────────────────────────────── */
 .cv-print-root {
     width: calc(210mm - 2 * 0.3in);
     max-width: 100%;
@@ -18,20 +21,55 @@
     line-height: 1.15rem;
 }
 
-/* Ensure markdown lists render with bullets across Tailwind preflight resets */
-.markdown-content ul {
-    list-style-type: disc;
-    padding-left: 1.25rem;
-}
-.markdown-content li {
-    margin: 0.1rem 0;
+/* ── CV markdown rendering (react-markdown in templates) ─ */
+.cv-markdown p         { margin: 0; display: inline; }
+.cv-markdown ul        { margin: 0; padding-left: 1.25rem; list-style-type: disc; }
+.cv-markdown ol        { margin: 0; padding-left: 1.25rem; list-style-type: decimal; }
+.cv-markdown li        { margin: 0.1rem 0; }
+
+/* ── Tiptap WYSIWYG editor ───────────────────────────── */
+.tiptap-editor .tiptap {
+    min-height: 120px;
+    padding: 0.4rem 0.625rem;
+    outline: none;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
-/* Force bullets in the editor preview as well */
-.wmde-markdown ul {
-    list-style-type: disc !important;
-    padding-left: 1.25rem !important;
+.tiptap-editor .tiptap ul {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
 }
-li {
-    margin: 0.1rem 0 !important;
+
+.tiptap-editor .tiptap ol {
+    list-style-type: decimal;
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
 }
+
+.tiptap-editor .tiptap li { margin: 0.1rem 0; }
+
+.tiptap-editor .tiptap p { margin: 0; }
+
+.tiptap-editor .tiptap p + p { margin-top: 0.25rem; }
+
+/* Placeholder text */
+.tiptap-editor .tiptap p.is-editor-empty:first-child::before {
+    color: #9ca3af;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+.tiptap-editor .tiptap a {
+    color: #2563eb;
+    text-decoration: underline;
+    cursor: text;
+}
+
+/* CV template: render underline, strikethrough and colored spans from tiptap-markdown HTML output */
+.cv-markdown u           { text-decoration: underline; }
+.cv-markdown s           { text-decoration: line-through; }
+.cv-markdown a           { color: #2563eb; text-decoration: underline; }

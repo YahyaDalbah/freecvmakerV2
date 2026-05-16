@@ -29,9 +29,14 @@ function DropdownMenu({ children, onDelete, title }: { children: React.ReactNode
                     <FontAwesomeIcon className={`${isHovered ? 'text-blue-500' : 'text-gray-700'} cursor-pointer`} icon={isOpen ? faChevronUp : faChevronDown} />
                 </div>
             </div>
-            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 mt-4' : 'max-h-0'}`}>
-                <div className="pt-4">
-                    {children}
+            <div
+                className="grid transition-all duration-300 ease-in-out"
+                style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+            >
+                <div className="overflow-hidden min-h-0">
+                    <div className="pt-4">
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>
