@@ -74,7 +74,8 @@ function TextAreaInput({ span = false, label, name: _name, value = "", onChange 
         ],
         content: value ?? "",
         onUpdate: ({ editor }) => {
-            const md = (editor.storage.markdown as { getMarkdown: () => string }).getMarkdown();
+            const md = (editor.storage as any).markdown.getMarkdown();
+            if (md === lastSentRef.current) return;
             lastSentRef.current = md;
             startSaving();
             if (debounceRef.current) clearTimeout(debounceRef.current);

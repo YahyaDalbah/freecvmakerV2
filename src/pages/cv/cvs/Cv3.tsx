@@ -159,7 +159,7 @@ function Cv3({
                         <div className="flex pt-3">
                             <div className={L}><SectionLabel text="Skills" /></div>
                             <div className={R}>
-                                <div className="grid grid-cols-2 gap-x-8">
+                                <div className="grid grid-cols-2 gap-x-14">
                                     {validSkills.map((skill) => (
                                         <div key={skill.id} className="flex justify-between items-baseline py-[3px] text-[13px]">
                                             <span className="font-medium">

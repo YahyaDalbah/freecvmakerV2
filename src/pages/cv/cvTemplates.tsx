@@ -17,13 +17,13 @@ export interface CvTemplateMeta {
     id: string;
     label: string;
     image: string;
-    /** True if the template has a full-bleed background (e.g. sidebar) that must extend edge-to-edge. */
     fullBleed?: boolean;
+    supportsAccentColor?: boolean;
 }
 
 export const CV_TEMPLATE_META: CvTemplateMeta[] = [
     { id: "cv1", label: "Classic", image: cv1Img },
-    { id: "cv2", label: "Sidebar", image: cv2Img, fullBleed: true },
+    { id: "cv2", label: "Sidebar", image: cv2Img, fullBleed: true, supportsAccentColor: true },
     { id: "cv3", label: "Two-Column", image: cv3Img },
 ];
 
