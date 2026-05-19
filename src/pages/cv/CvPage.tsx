@@ -13,7 +13,7 @@ import { faPlus, faPenToSquare, faFileLines, faGripVertical } from "@fortawesome
 import CvLivePreview from "./CvLivePreview";
 import Templates from "./Templates";
 import { fetchCvPdfBlob } from "../../apis/cvPdfApi";
-import { DEFAULT_CV_TEMPLATE_ID } from "./cvTemplates";
+import { DEFAULT_CV_TEMPLATE_ID, templateShowsSkillLevel } from "./cvTemplates";
 import { COLOR_PRESETS } from "./Templates";
 import { saveAs } from "file-saver";
 import { AutoSaveProvider, useAutoSave } from "../../contexts/AutoSaveContext";
@@ -702,14 +702,16 @@ function CvPageContent() {
                                                     value={skill.description}
                                                     onChange={(e) => updateSkills(skill.id, e.target.value)}
                                                 />
-                                                <SelectInput
-                                                    name="skillLevel"
-                                                    label="Level (1–5)"
-                                                    value={skill.level ?? 3}
-                                                    onChange={(val) => updateSkillLevel(skill.id, val)}
-                                                    min={1}
-                                                    max={5}
-                                                />
+                                                {templateShowsSkillLevel(templateId) && (
+                                                    <SelectInput
+                                                        name="skillLevel"
+                                                        label="Level (1–5)"
+                                                        value={skill.level ?? 3}
+                                                        onChange={(val) => updateSkillLevel(skill.id, val)}
+                                                        min={1}
+                                                        max={5}
+                                                    />
+                                                )}
                                             </GridInputsContainer>
                                         </DropdownMenu>
                                     </SortableListRow>

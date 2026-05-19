@@ -19,12 +19,13 @@ export interface CvTemplateMeta {
     image: string;
     fullBleed?: boolean;
     supportsAccentColor?: boolean;
+    showSkillLevel?: boolean;
 }
 
 export const CV_TEMPLATE_META: CvTemplateMeta[] = [
     { id: "cv1", label: "Classic", image: cv1Img },
-    { id: "cv2", label: "Sidebar", image: cv2Img, fullBleed: true, supportsAccentColor: true },
-    { id: "cv3", label: "Two-Column", image: cv3Img },
+    { id: "cv2", label: "Sidebar", image: cv2Img, fullBleed: true, supportsAccentColor: true, showSkillLevel: true },
+    { id: "cv3", label: "Two-Column", image: cv3Img, showSkillLevel: true },
 ];
 
 export const DEFAULT_CV_TEMPLATE_ID = "cv1";
@@ -36,4 +37,8 @@ export function resolveCvTemplate(id: string | null | undefined): ComponentType<
 
 export function isFullBleedTemplate(id: string | null | undefined): boolean {
     return CV_TEMPLATE_META.find(t => t.id === id)?.fullBleed ?? false;
+}
+
+export function templateShowsSkillLevel(id: string | null | undefined): boolean {
+    return CV_TEMPLATE_META.find(t => t.id === id)?.showSkillLevel ?? false;
 }
