@@ -80,7 +80,7 @@ function GhostButton({ children, onClick, className, disabled = false }: ButtonP
         <button
             type="button"
             className={`w-fit rounded-lg bg-transparent px-3 py-2 font-semibold transition-all duration-200 ${
-                disabled ? "cursor-not-allowed text-blue-300" : "cursor-pointer text-blue-600 hover:bg-gray-200"
+                disabled ? "cursor-not-allowed text-blue-300" : "cursor-pointer text-blue-600 hover:bg-blue-100"
             } ${className || ""}`}
             onClick={() => void onClick?.()}
             disabled={disabled}

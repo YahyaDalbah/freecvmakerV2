@@ -1,60 +1,39 @@
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import { useMemo } from "react";
 import { AvoidBreak } from "../../pages/cv/AvoidBreak";
 
 interface MarkdownRenderProps {
   content: string;
   className?: string;
-  /** When set, each unordered list item gets its own AvoidBreak so individual
-   *  bullets can be pushed past a page boundary without dragging the whole list. */
   idPrefix?: string;
 }
 
 export default function MarkdownRender({ content, className = "", idPrefix }: MarkdownRenderProps) {
-  const processContent = (text: string) => {
-    const lines = text.split('\n');
-    const groups: string[] = [];
-    let currentListGroup: string[] = [];
+  const nodes = useMemo(() => {
+    if (!idPrefix) return null;
+    const div = document.createElement("div");
+    div.innerHTML = content;
+    return Array.from(div.children);
+  }, [content, idPrefix]);
 
-    lines.forEach((line) => {
-      const isListItem = /^\s*[-*+]\s/.test(line) || /^\s*\d+\.\s/.test(line);
-      if (isListItem) {
-        currentListGroup.push(line);
-      } else {
-        if (currentListGroup.length > 0) {
-          groups.push(currentListGroup.join('\n'));
-          currentListGroup = [];
-        }
-        groups.push(line.trim() ? line : "");
-      }
-    });
-
-    if (currentListGroup.length > 0) groups.push(currentListGroup.join('\n'));
-    return groups;
-  };
-
-  const contentGroups = processContent(content);
+  if (!idPrefix) {
+    return <div className={`cv-markdown ${className}`} dangerouslySetInnerHTML={{ __html: content }} />;
+  }
 
   return (
     <div className={`cv-markdown ${className}`}>
-      {contentGroups.map((group, groupIndex) => {
-        if (group === "") {
-          return <span key={groupIndex} className="block h-[1em] min-h-[1em] w-full shrink-0" aria-hidden />;
-        }
-
-        if (idPrefix && /^\s*[-*+]\s/.test(group)) {
-          return group.split('\n').filter(Boolean).map((item, i) => (
-            <AvoidBreak key={`${groupIndex}-${i}`} id={`${idPrefix}-${groupIndex}-${i}`}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{item}</ReactMarkdown>
+      {nodes!.flatMap((node, i) => {
+        const tag = node.tagName.toLowerCase();
+        if (tag === "ul" || tag === "ol") {
+          return Array.from(node.children).map((li, j) => (
+            <AvoidBreak key={`${i}-${j}`} id={`${idPrefix}-${i}-${j}`}>
+              <div dangerouslySetInnerHTML={{ __html: `<${tag}>${li.outerHTML}</${tag}>` }} />
             </AvoidBreak>
           ));
         }
-
         return (
-          <span key={groupIndex} className="block">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{group}</ReactMarkdown>
-          </span>
+          <AvoidBreak key={i} id={`${idPrefix}-${i}`}>
+            <div dangerouslySetInnerHTML={{ __html: node.outerHTML }} />
+          </AvoidBreak>
         );
       })}
     </div>

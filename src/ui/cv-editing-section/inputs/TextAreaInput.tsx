@@ -74,12 +74,12 @@ function TextAreaInput({ span = false, label, name: _name, value = "", onChange 
         ],
         content: value ?? "",
         onUpdate: ({ editor }) => {
-            const md = (editor.storage as any).markdown.getMarkdown();
-            if (md === lastSentRef.current) return;
-            lastSentRef.current = md;
+            const html = editor.getHTML();
+            if (html === lastSentRef.current) return;
+            lastSentRef.current = html;
             startSaving();
             if (debounceRef.current) clearTimeout(debounceRef.current);
-            debounceRef.current = setTimeout(() => onChange(md), 900);
+            debounceRef.current = setTimeout(() => onChange(html), 900);
         },
     });
 
