@@ -1,4 +1,4 @@
-import MarkdownRender from "../../../ui/cv-sections/MarkdownRender";
+﻿import MarkdownRender from "../../../ui/cv-sections/MarkdownRender";
 import { memo, useMemo, Fragment } from "react";
 import { isAnyFieldFilled } from "../../../utils/cv.utils";
 import { normalizeSectionOrder, type CvSectionId } from "../../../apis/cvApi";
@@ -61,7 +61,7 @@ function Cv3({
                         <div className="flex pt-3 gap-0">
                             <div className={L}><SectionLabel text="Profile" /></div>
                             <div className={`${R} text-[13px] leading-relaxed`}>
-                                <MarkdownRender content={professionalSummary} idPrefix="summary" />
+                                <MarkdownRender content={professionalSummary} />
                             </div>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ function Cv3({
                                         <p className="text-[12px] text-gray-500 mt-0.5">{exp.city}</p>
                                     )}
                                     {exp.description && (
-                                        <MarkdownRender content={exp.description} className="mt-1 text-[13px]" idPrefix={exp.id} />
+                                        <MarkdownRender content={exp.description} className="mt-1 text-[13px]" />
                                     )}
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ function Cv3({
                                         ].filter(Boolean).join(", ")}
                                     </p>
                                     {edu.description && (
-                                        <MarkdownRender content={edu.description} className="mt-1 text-[13px]" idPrefix={edu.id} />
+                                        <MarkdownRender content={edu.description} className="mt-1 text-[13px]" />
                                     )}
                                 </div>
                             </div>
@@ -144,7 +144,7 @@ function Cv3({
                                         {proj.technologies?.length ? ` (${proj.technologies.join(", ")})` : ""}
                                     </p>
                                     {proj.description && (
-                                        <MarkdownRender content={proj.description} className="mt-1 text-[13px]" idPrefix={proj.id} />
+                                        <MarkdownRender content={proj.description} className="mt-1 text-[13px]" />
                                     )}
                                 </div>
                             </div>
@@ -199,7 +199,7 @@ function Cv3({
                                         {ref.phone}
                                     </p>
                                     {ref.description && (
-                                        <MarkdownRender content={ref.description} className="mt-1 text-[13px]" idPrefix={ref.id} />
+                                        <MarkdownRender content={ref.description} className="mt-1 text-[13px]" />
                                     )}
                                 </div>
                             </div>

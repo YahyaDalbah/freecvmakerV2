@@ -1,4 +1,4 @@
-import SectionTitle from "../../../ui/cv-sections/SectionTitle";
+﻿import SectionTitle from "../../../ui/cv-sections/SectionTitle";
 import SectionListContainer from "../../../ui/cv-sections/SectionListContainer";
 import MarkdownRender from "../../../ui/cv-sections/MarkdownRender";
 import { memo, useMemo, Fragment } from "react";
@@ -35,7 +35,7 @@ function Cv1({
                     professionalSummary?.trim() && (
                         <section>
                             <SectionTitle title="Professional Summary" />
-                            <MarkdownRender content={professionalSummary} idPrefix="summary" />
+                            <MarkdownRender content={professionalSummary} />
                         </section>
                     )
                 );
@@ -58,7 +58,7 @@ function Cv1({
                                         </div>
                                         <div className="mt-0.5">{exp.city}</div>
                                         {exp.description && (
-                                            <MarkdownRender content={exp.description} className="mt-1" idPrefix={exp.id} />
+                                            <MarkdownRender content={exp.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -85,7 +85,7 @@ function Cv1({
                                             </div>
                                         </div>
                                         {edu.description && (
-                                            <MarkdownRender content={edu.description} className="mt-1" idPrefix={edu.id} />
+                                            <MarkdownRender content={edu.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -107,7 +107,7 @@ function Cv1({
                                                 : ""
                                         }`}</div>
                                         {proj.description && (
-                                            <MarkdownRender content={proj.description} className="mt-1" idPrefix={proj.id} />
+                                            <MarkdownRender content={proj.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
@@ -149,7 +149,7 @@ function Cv1({
                                             {ref.phone ? ` | ${ref.phone}` : ""}
                                         </div>
                                         {ref.description && (
-                                            <MarkdownRender content={ref.description} className="mt-1" idPrefix={ref.id} />
+                                            <MarkdownRender content={ref.description} className="mt-1" />
                                         )}
                                     </div>
                                 ))}
